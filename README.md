@@ -1,11 +1,11 @@
-# Baraya 🚴‍♂️👥
+# Baraya 
 > **"Satu tempat buat semua urusan komunitasmu"**
 
 Aplikasi koordinasi komunitas hobi yang dirancang untuk mengatasi masalah informasi penting yang sering tertimbun obrolan chat grup (WhatsApp/Telegram).
 
 ---
 
-## 💡 Masalah yang Diselesaikan
+##  Masalah yang Diselesaikan
 Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun begitu anggota bertambah banyak, obrolan basa-basi membuat informasi krusial sering terlewat:
 - Jadwal event & konfirmasi siapa yang ikut/tidak ikut tenggelam.
 - Pengumuman penting dari pengurus tidak terbaca.
@@ -15,9 +15,9 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 
 ---
 
-## 🚀 3 Fitur Inti
+## 3 Fitur Inti
 
-### 1. 📅 Event & Jadwal
+### 1. Event & Jadwal
 - **Jadwal & Detail Event**: Informasi tanggal, jam, rute, dan titik kumpul yang jelas.
 - **Sistem RSVP Real-time**: Anggota dapat memilih status kehadiran (*Ikut*, *Ragu*, *Gak Ikut*) dengan penghitungan kuorum otomatis.
 - **Pengingat H-1 (Reminder)**: Notifikasi terjadwal 24 jam sebelum acara dimulai agar anggota tidak lupa.
@@ -29,7 +29,7 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 - **Kategori Pengumuman**: Filter cepat berdasarkan tag (*Penting*, *Keuangan*, *Aturan*, *Umum*).
 - **Detail Pengumuman**: Modal sheet lengkap dengan identitas pengurus yang menerbitkan.
 
-### 3. ✅ Pembagian Tugas Simpel (Checklist Panitia Dadakan)
+### 3. Pembagian Tugas Simpel (Checklist Panitia Dadakan)
 - **Checklist Terintegrasi ke Event**: Setiap tugas secara langsung tertaut dengan event tertentu (misal: "Gowes Minggu Pagi" butuh konsumsi & pompa).
 - **Penugasan Anggota (Assignment)**: Tugas dapat ditugaskan ke satu atau beberapa anggota komunitas.
 - **Progress Bar Real-time**: Melacak persentase penyelesaian tugas panitia (*Contoh: 3 dari 6 selesai - 50%*).
@@ -37,7 +37,7 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 
 ---
 
-## 🛠️ Tech Stack & Arsitektur
+## Tech Stack & Arsitektur
 - **Framework**: [Flutter](https://flutter.dev) (v3.44+, Material 3)
 - **State Management**: [`Provider`](https://pub.dev/packages/provider) (`ChangeNotifier` reactive architecture)
 - **Notifikasi Lokal**: [`flutter_local_notifications`](https://pub.dev/packages/flutter_local_notifications) & [`timezone`](https://pub.dev/packages/timezone)
@@ -46,7 +46,7 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 
 ---
 
-## 📂 Struktur Proyek
+## Struktur Proyek
 ```text
 lib/
 ├── main.dart                      # Entry point, Theme configuration, & Provider setup
@@ -65,7 +65,7 @@ lib/
 
 ---
 
-## 🏃‍♂️ Cara Menjalankan
+## Cara Menjalankan
 
 1. **Pastikan dependensi terpasang**:
    ```bash
