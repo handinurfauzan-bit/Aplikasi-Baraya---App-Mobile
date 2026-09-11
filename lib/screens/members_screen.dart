@@ -19,7 +19,7 @@ class MembersScreen extends StatelessWidget {
     final members = community?.members ?? const <User>[];
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
@@ -153,7 +153,7 @@ class MembersScreen extends StatelessWidget {
                         Icons.event_available, Theme.of(ctx).colorScheme.primary),
                     const SizedBox(width: 10),
                     _statBox(ctx, 'Tugas Aktif', openTasks.toString(),
-                        Icons.checklist, Colors.teal.shade700),
+                        Icons.checklist, Colors.green.shade700),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -166,7 +166,7 @@ class MembersScreen extends StatelessWidget {
                 else
                   ...rsvps.map((r) {
                     final statusColor = switch (r.status) {
-                      'joined' => Colors.teal.shade700,
+                      'joined' => Colors.green.shade700,
                       'maybe' => Colors.orange.shade800,
                       _ => Colors.red.shade700,
                     };

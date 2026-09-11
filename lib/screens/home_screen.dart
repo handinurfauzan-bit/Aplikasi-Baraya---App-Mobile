@@ -31,11 +31,13 @@ const List<String> _bulan = [
 class HomeScreen extends StatefulWidget {
   final String communityId;
   final NotificationService? notificationService;
+  final String? welcomeName;
 
   const HomeScreen({
     super.key,
     this.communityId = 'kumpul_001',
     this.notificationService,
+    this.welcomeName,
   });
 
   @override
@@ -61,6 +63,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
     _notificationService = widget.notificationService ?? NotificationService();
     _notificationService.init();
+    if (widget.welcomeName != null && widget.welcomeName!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Selamat datang, ${widget.welcomeName}!'),
+              backgroundColor: Colors.green.shade700,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -90,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: colorScheme.primary,
@@ -172,25 +187,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         unselectedItemColor: colorScheme.onSurfaceVariant,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.calendar_month),
-            activeIcon: const Icon(Icons.calendar_month, size: 26),
+            icon: Icon(Icons.calendar_month),
+            activeIcon: Icon(Icons.calendar_month, size: 26),
             label: 'Event',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.campaign),
-            activeIcon: const Icon(Icons.campaign, size: 26),
+            icon: Icon(Icons.campaign),
+            activeIcon: Icon(Icons.campaign, size: 26),
             label: 'Pengumuman',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.checklist),
-            activeIcon: const Icon(Icons.checklist, size: 26),
+            icon: Icon(Icons.checklist),
+            activeIcon: Icon(Icons.checklist, size: 26),
             label: 'Tugas',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            activeIcon: const Icon(Icons.person, size: 26),
+            icon: Icon(Icons.person),
+            activeIcon: Icon(Icons.person, size: 26),
             label: 'Profil',
           ),
         ],
@@ -248,8 +263,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_busy, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 12),
+            SizedBox(
+              width: 120,
+              height: 100,
+              child: CustomPaint(painter: _EventEmptyPainter()),
+            ),
+            const SizedBox(height: 16),
             const Text(
               'Belum ada event jadwal komunitas.',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -328,12 +347,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 : null,
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -404,8 +417,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             child: Column(
               children: [
-                Icon(Icons.search_off,
-                    size: 40, color: Theme.of(context).colorScheme.outline),
+                SizedBox(
+                  width: 70,
+                  height: 56,
+                  child: CustomPaint(painter: _SearchEmptyPainter()),
+                ),
                 const SizedBox(height: 8),
                 const Text(
                   'Tidak ada event yang cocok dengan filter.',
@@ -462,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   SnackBar(
                     content: Text(
                       status == 'joined'
-                          ? 'Anda konfirmasi Ikut pada "${event.title}"! 🎉'
+                          ? 'Anda konfirmasi Ikut pada "${event.title}"!'
                           : status == 'maybe'
                               ? 'Status Anda diubah ke Ragu-ragu.'
                               : 'Status Anda diubah ke Tidak Ikut.',
@@ -484,8 +500,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('⏰ Pengingat H-1 aktif untuk "${event.title}"'),
-                        backgroundColor: Colors.teal.shade700,
+                        content: Text('Pengingat H-1 aktif untuk "${event.title}"'),
+                        backgroundColor: Colors.green.shade700,
                       ),
                     );
                   }
@@ -731,13 +747,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           padding: const EdgeInsets.all(12),
           margin: const EdgeInsets.only(bottom: 14),
           decoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.1),
+            color: Colors.green.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.amber.shade200),
+            border: Border.all(color: Colors.green.shade200),
           ),
           child: Row(
             children: [
-              Icon(Icons.campaign_outlined, color: Colors.amber.shade900, size: 24),
+              Icon(Icons.campaign_outlined, color: Colors.green.shade800, size: 24),
               const SizedBox(width: 10),
               const Expanded(
                 child: Text(
@@ -851,8 +867,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     value: progress,
                     minHeight: 8,
                     backgroundColor: Colors.grey.shade200,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      progress == 1.0 ? Colors.teal : Theme.of(context).colorScheme.primary,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                      progress == 1.0 ? Colors.green : Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -869,8 +885,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             alignment: Alignment.center,
             child: Column(
               children: [
-                Icon(Icons.assignment_turned_in_outlined,
-                    size: 48, color: Colors.grey.shade400),
+                SizedBox(
+                  width: 100,
+                  height: 90,
+                  child: CustomPaint(painter: _TaskEmptyPainter()),
+                ),
                 const SizedBox(height: 8),
                 const Text('Belum ada tugas untuk kategori ini.'),
               ],
@@ -948,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Nama Event',
                         hintText: 'misal: Gowes Pagi Sudirman',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.event),
                       ),
                     ),
@@ -958,7 +977,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Lokasi / Titik Kumpul',
                         hintText: 'misal: Gate 1 GBK Senayan',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.location_on),
                       ),
                     ),
@@ -1007,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Deskripsi Singkat',
                         hintText: 'Perlengkapan yang harus dibawa, rute, dll.',
-                        border: OutlineInputBorder(),
+                        
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1053,8 +1072,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Event "${newEvent.title}" berhasil dibuat! 🎉'),
-                              backgroundColor: Colors.teal.shade700,
+                              content: Text('Event "${newEvent.title}" berhasil dibuat!'),
+                              backgroundColor: Colors.green.shade700,
                             ),
                           );
                         },
@@ -1119,7 +1138,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Judul Pengumuman',
                         hintText: 'misal: Iuran Kas Bulan Ini',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.title),
                       ),
                     ),
@@ -1128,7 +1147,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       initialValue: category,
                       decoration: const InputDecoration(
                         labelText: 'Kategori',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.category),
                       ),
                       items: ['Penting', 'Keuangan', 'Aturan', 'Umum'].map((cat) {
@@ -1145,7 +1164,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Isi Pengumuman',
                         hintText: 'Tuliskan informasi penting selengkapnya di sini...',
-                        border: OutlineInputBorder(),
+                        
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -1187,8 +1206,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Pengumuman "${updated.title}" diperbarui ✏️'),
-                                backgroundColor: Colors.teal.shade700,
+                                content: Text('Pengumuman "${updated.title}" diperbarui'),
+                                backgroundColor: Colors.green.shade700,
                               ),
                             );
                           } else {
@@ -1207,8 +1226,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Pengumuman "${newAnn.title}" diterbitkan! 📢'),
-                                backgroundColor: Colors.teal.shade700,
+                              content: Text('Pengumuman "${newAnn.title}" diterbitkan!'),
+                              backgroundColor: Colors.green.shade700,
                               ),
                             );
                           }
@@ -1284,7 +1303,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       initialValue: targetEventId,
                       decoration: const InputDecoration(
                         labelText: 'Event Terkait',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.event_note),
                       ),
                       items: events.map((e) {
@@ -1306,7 +1325,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Nama Tugas',
                         hintText: 'misal: Bawa P3K & Konsumsi',
-                        border: OutlineInputBorder(),
+                        
                         prefixIcon: Icon(Icons.task_alt),
                       ),
                     ),
@@ -1317,7 +1336,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Catatan / Deskripsi',
                         hintText: 'Detail kebutuhan tugas...',
-                        border: OutlineInputBorder(),
+                        
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -1375,8 +1394,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Tugas "${newTask.title}" berhasil ditambahkan! ✅'),
-                              backgroundColor: Colors.teal.shade700,
+                              content: Text('Tugas "${newTask.title}" berhasil ditambahkan!'),
+                              backgroundColor: Colors.green.shade700,
                             ),
                           );
                         },
@@ -1439,8 +1458,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 dataService.resetToSeedData();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Data demo dikembalikan ke versi awal 🔄'),
-                    backgroundColor: Colors.teal.shade700,
+                    content: const Text('Data demo dikembalikan ke versi awal'),
+                    backgroundColor: Colors.green.shade700,
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -1620,7 +1639,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Pengumuman "${ann.title}" dihapus 🗑️'),
+                              content: Text('Pengumuman "${ann.title}" dihapus'),
                               backgroundColor: Colors.red.shade700,
                             ),
                           );
@@ -1661,4 +1680,192 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       },
     );
   }
+}
+
+class _EventEmptyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    const primary = Color(0xFF16A34A);
+
+    // Calendar body
+    final bodyRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(w * 0.12, h * 0.14, w * 0.76, h * 0.72),
+      const Radius.circular(16),
+    );
+    canvas.drawRRect(
+      bodyRect,
+      Paint()..color = primary.withValues(alpha: 0.08),
+    );
+    canvas.drawRRect(
+      bodyRect,
+      Paint()
+        ..color = primary.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+
+    // Top color bar
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.12, h * 0.14, w * 0.76, h * 0.18),
+        const Radius.circular(16),
+      ),
+      Paint()..color = primary.withValues(alpha: 0.14),
+    );
+
+    // Binding rings
+    final ringPaint = Paint()
+      ..color = primary.withValues(alpha: 0.7)
+      ..strokeWidth = 2.5;
+    for (int i = 0; i < 2; i++) {
+      final cx = w * (0.28 + i * 0.44);
+      canvas.drawArc(
+        Rect.fromLTWH(cx - 4, h * 0.05, 8, h * 0.2),
+        3.14159,
+        3.14159,
+        false,
+        ringPaint,
+      );
+    }
+
+    // Checkmark inside
+    final checkPaint = Paint()
+      ..color = primary
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final path = Path()
+      ..moveTo(w * 0.36, h * 0.52)
+      ..lineTo(w * 0.47, h * 0.63)
+      ..lineTo(w * 0.66, h * 0.4);
+    canvas.drawPath(path, checkPaint);
+
+    // Small sparkle
+    final dotPaint = Paint()..color = primary.withValues(alpha: 0.4);
+    canvas.drawCircle(Offset(w * 0.82, h * 0.28), 3, dotPaint);
+    canvas.drawCircle(Offset(w * 0.2, h * 0.85), 2.5, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _TaskEmptyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    const primary = Color(0xFF16A34A);
+
+    // Clipboard
+    final bodyRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(w * 0.18, h * 0.1, w * 0.64, h * 0.8),
+      const Radius.circular(14),
+    );
+    canvas.drawRRect(bodyRect, Paint()..color = primary.withValues(alpha: 0.08));
+    canvas.drawRRect(
+      bodyRect,
+      Paint()
+        ..color = primary.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+
+    // Clipboard clip
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.4, h * 0.02, w * 0.2, h * 0.14),
+        const Radius.circular(6),
+      ),
+      Paint()..color = primary.withValues(alpha: 0.5),
+    );
+
+    // Task lines
+    final linePaint = Paint()
+      ..color = primary.withValues(alpha: 0.35)
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    for (int i = 0; i < 3; i++) {
+      final y = h * (0.34 + i * 0.22);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(w * 0.26, y, w * 0.48, 6),
+          const Radius.circular(3),
+        ),
+        linePaint,
+      );
+      // Checkbox
+      canvas.drawCircle(
+        Offset(w * 0.48, y + 3),
+        7,
+        Paint()
+          ..color = primary.withValues(alpha: 0.6)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+    }
+
+    // Completed check
+    final checkPaint = Paint()
+      ..color = primary
+      ..strokeWidth = 3.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.28, h * 0.24)
+        ..lineTo(w * 0.35, h * 0.3)
+        ..lineTo(w * 0.44, h * 0.2),
+      checkPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _SearchEmptyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final Color primary = const Color(0xFF16A34A).withValues(alpha: 0.6);
+
+    // Magnifier glass
+    canvas.drawCircle(
+      Offset(w * 0.45, h * 0.42),
+      h * 0.32,
+      Paint()
+        ..color = primary.withValues(alpha: 0.08)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawCircle(
+      Offset(w * 0.45, h * 0.42),
+      h * 0.32,
+      Paint()
+        ..color = primary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4,
+    );
+    canvas.drawLine(
+      Offset(w * 0.66, h * 0.62),
+      Offset(w * 0.88, h * 0.84),
+      Paint()
+        ..color = primary
+        ..strokeWidth = 6
+        ..strokeCap = StrokeCap.round,
+    );
+
+    // Question mark dot inside
+    canvas.drawCircle(
+      Offset(w * 0.45, h * 0.35),
+      4,
+      Paint()..color = primary,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

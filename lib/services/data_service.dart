@@ -257,7 +257,7 @@ class DataService extends ChangeNotifier {
     final ann1 = Announcement(
       id: 'ann_001',
       communityId: commId,
-      title: '🚨 Info Pengalihan Rute CFD Minggu Ini',
+      title: 'Info Pengalihan Rute CFD Minggu Ini',
       body:
           'Diberitahukan kepada seluruh anggota, jalur Thamrin arah Monas ada penyesuaian karena pengerjaan MRT. Rute gowes Minggu nanti dialihkan melalui jalur Kebon Sirih. Tetap beriringan dan taati rambu lalu lintas!',
       authorId: 'user_004',
@@ -270,7 +270,7 @@ class DataService extends ChangeNotifier {
     final ann2 = Announcement(
       id: 'ann_002',
       communityId: commId,
-      title: '🚴 Jersey Resmi Batavia 2026 Sudah Siap Dipesan',
+      title: 'Jersey Resmi Batavia 2026 Sudah Siap Dipesan',
       body:
           'Desain jersey edisi 2026 warna Deep Navy kombinasi Electric Lime sudah final. Silakan transfer DP 50% ke rekening bendahara Siti Rahma sebelum tanggal 20 bulan ini. Info ukuran ada di spreadsheet pengumuman.',
       authorId: 'user_003',
@@ -399,7 +399,7 @@ class DataService extends ChangeNotifier {
     _announcements['ann_101'] = Announcement(
       id: 'ann_101',
       communityId: commId,
-      title: '📢 Calling Model untuk Photoshoot Tema Vintage',
+      title: 'Calling Model untuk Photoshoot Tema Vintage',
       body:
           'Kita butuh 3-4 model sukarela untuk photoshoot komunal bulan depan di Kota Tua. Foto hasil dikelola komunitas dan bisa dipakai untuk portfolio. Daftar langsung di kolom komentar pengumuman.',
       authorId: 'user_102',
@@ -519,7 +519,7 @@ class DataService extends ChangeNotifier {
     _announcements['ann_201'] = Announcement(
       id: 'ann_201',
       communityId: commId,
-      title: '⛰️ Aturan Baru: Wajib Kantong Sampah Pribadi',
+      title: 'Aturan Baru: Wajib Kantong Sampah Pribadi',
       body:
           'Demikian mulai bulan ini setiap pendaki WAJIB membawa kantong sampah pribadi. Bajwa pulang membawa sampahnya masing-masing. Pelanggaran akan dicatat dan dilarang ikut pendakian bulan berikutnya.',
       authorId: 'user_202',

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/app_settings.dart';
 import 'services/data_service.dart';
+import 'widgets/gradient_background.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,8 @@ class KumpulApp extends StatelessWidget {
             theme: _buildTheme(Brightness.light),
             darkTheme: _buildTheme(Brightness.dark),
             home: const SplashScreen(),
+            builder: (context, child) =>
+                GradientBackground(child: child ?? const SizedBox.shrink()),
           );
         },
       ),
@@ -45,16 +48,23 @@ class KumpulApp extends StatelessWidget {
 
   ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF16A34A),
+      brightness: brightness,
+      primary: const Color(0xFF15803D),
+      secondary: const Color(0xFF0D9488),
+      surface: isDark ? const Color(0xFF121212) : const Color(0xFFF8FAFC),
+    );
+
+    OutlineInputBorder border() => OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        );
+
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF4F46E5), // Indigo Accent
-        brightness: brightness,
-        primary: const Color(0xFF4338CA),
-        secondary: const Color(0xFF0D9488), // Teal Accent
-        surface: isDark ? const Color(0xFF121212) : const Color(0xFFF8FAFC),
-      ),
-      scaffoldBackgroundColor: isDark ? const Color(0xFF0F1115) : const Color(0xFFF1F5F9),
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: Colors.transparent,
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -64,6 +74,8 @@ class KumpulApp extends StatelessWidget {
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: false,
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -72,6 +84,50 @@ class KumpulApp extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+            : const Color(0xFFF2F7F4).withValues(alpha: 0.6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: border(),
+        enabledBorder: border(),
+        focusedBorder: border().copyWith(
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+        ),
+        errorBorder: border().copyWith(
+          borderSide: BorderSide(color: colorScheme.error, width: 1.2),
+        ),
+        focusedErrorBorder: border().copyWith(
+          borderSide: BorderSide(color: colorScheme.error, width: 1.5),
+        ),
+        prefixIconColor: const Color(0xFF16A34A).withValues(alpha: 0.45),
+        labelStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        floatingLabelStyle: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.primary,
+        ),
+        hintStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.65),
+        ),
+        errorStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: colorScheme.error,
+        ),
+      ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: colorScheme.primary,
+        selectionColor: colorScheme.primary.withValues(alpha: 0.25),
+        selectionHandleColor: colorScheme.primary,
       ),
     );
   }

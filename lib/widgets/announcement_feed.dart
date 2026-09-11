@@ -47,7 +47,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
                   label: Text(
-                    cat == 'Disematkan' ? '📌 Disematkan' : cat,
+                    cat == 'Disematkan' ? 'Disematkan' : cat,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -84,7 +84,11 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
             alignment: Alignment.center,
             child: Column(
               children: [
-                Icon(Icons.feed_outlined, size: 48, color: colorScheme.outline),
+                SizedBox(
+                  width: 90,
+                  height: 80,
+                  child: CustomPaint(painter: _AnnouncementEmptyPainter()),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   'Tidak ada pengumuman di kategori ini',
@@ -299,4 +303,86 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
       return DateFormat('d MMM').format(dateTime);
     }
   }
+}
+
+class _AnnouncementEmptyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    const primary = Color(0xFF16A34A);
+
+    // Megaphone body
+    final megaphonePaint = Paint()..color = primary.withValues(alpha: 0.12);
+    final horn = Path()
+      ..moveTo(w * 0.16, h * 0.3)
+      ..quadraticBezierTo(w * 0.78, h * 0.12, w * 0.9, h * 0.28)
+      ..quadraticBezierTo(w * 0.92, h * 0.4, w * 0.8, h * 0.46)
+      ..quadraticBezierTo(w * 0.5, h * 0.54, w * 0.16, h * 0.62)
+      ..close();
+    canvas.drawPath(horn, megaphonePaint);
+
+    final strokePaint = Paint()
+      ..color = primary.withValues(alpha: 0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+    canvas.drawPath(horn, strokePaint);
+
+    // Handle
+    canvas.drawLine(
+      Offset(w * 0.16, h * 0.3),
+      Offset(w * 0.16, h * 0.62),
+      strokePaint,
+    );
+
+    // Sound waves
+    final wavePaint = Paint()
+      ..color = primary.withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(
+      Rect.fromLTWH(w * 0.72, h * 0.18, 18, 18),
+      -0.5,
+      1.5,
+      false,
+      wavePaint,
+    );
+    canvas.drawArc(
+      Rect.fromLTWH(w * 0.84, h * 0.12, 20, 20),
+      -0.5,
+      1.5,
+      false,
+      wavePaint,
+    );
+
+    // Checkmark badge
+    canvas.drawCircle(
+      Offset(w * 0.3, h * 0.72),
+      12,
+      Paint()..color = primary.withValues(alpha: 0.15),
+    );
+    canvas.drawCircle(
+      Offset(w * 0.3, h * 0.72),
+      12,
+      Paint()
+        ..color = primary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.24, h * 0.72)
+        ..lineTo(w * 0.29, h * 0.77)
+        ..lineTo(w * 0.37, h * 0.67),
+      Paint()
+        ..color = primary
+        ..strokeWidth = 2.5
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -49,7 +49,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.event_busy, size: 48, color: Colors.grey.shade400),
+              SizedBox(
+                width: 90,
+                height: 80,
+                child: CustomPaint(painter: _NotFoundPainter()),
+              ),
               const SizedBox(height: 12),
               const Text('Event tidak ditemukan.'),
             ],
@@ -62,7 +66,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final communityUsers = dataService.getMembers(widget.communityId);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
@@ -117,7 +121,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       label: 'Ikut',
                       icon: Icons.check_circle_outline,
                       isSelected: event.rsvps[dataService.currentUserId] == 'joined',
-                      color: Colors.teal.shade700,
+                      color: Colors.green.shade700,
                       onTap: () => _setRsvp(dataService, event, 'joined'),
                     ),
                     const SizedBox(width: 8),
@@ -240,7 +244,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF4338CA), Color(0xFF4F46E5)],
+          colors: [Color(0xFF15803D), Color(0xFF16A34A)],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -389,7 +393,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final myRsvp = event.rsvps[currentUserId];
     switch (myRsvp) {
       case 'joined':
-        return 'Anda sudah konfirmasi IKUT. Sampai jumpa di titik kumpul! 🤙';
+        return 'Anda sudah konfirmasi IKUT. Sampai jumpa di titik kumpul!';
       case 'maybe':
         return 'Anda masih ragu. Update status kalau sudah yakin ya.';
       case 'declined':
@@ -479,7 +483,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           label: 'Ikut',
           count: joined.length,
           users: joined,
-          color: Colors.teal.shade700,
+          color: Colors.green.shade700,
           currentUserId: currentUserId,
         ),
         if (maybe.isNotEmpty) ...[
@@ -597,7 +601,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       SnackBar(
         content: Text(
           status == 'joined'
-              ? 'Anda konfirmasi Ikut pada "${event.title}"! 🎉'
+              ? 'Anda konfirmasi Ikut pada "${event.title}"!'
               : status == 'maybe'
                   ? 'Status Anda diubah ke Ragu-ragu.'
                   : 'Status Anda diubah ke Tidak Ikut.',
@@ -621,8 +625,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('⏰ Pengingat H-1 aktif untuk "${event.title}"'),
-            backgroundColor: Colors.teal.shade700,
+            content: Text('Pengingat H-1 aktif untuk "${event.title}"'),
+            backgroundColor: Colors.green.shade700,
           ),
         );
       }
@@ -718,7 +722,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       controller: titleController,
                       decoration: const InputDecoration(
                         labelText: 'Nama Event',
-                        border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.event),
                       ),
                     ),
@@ -727,7 +730,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       controller: locController,
                       decoration: const InputDecoration(
                         labelText: 'Lokasi / Titik Kumpul',
-                        border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.location_on),
                       ),
                     ),
@@ -775,7 +777,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       maxLines: 2,
                       decoration: const InputDecoration(
                         labelText: 'Deskripsi Singkat',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -824,8 +825,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Event "${updated.title}" berhasil diupdate! ✏️'),
-                                backgroundColor: Colors.teal.shade700,
+                                content: Text('Event "${updated.title}" berhasil diupdate!'),
+                                backgroundColor: Colors.green.shade700,
                               ),
                             );
                           }
@@ -916,7 +917,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Nama Tugas',
                         hintText: 'misal: Bawa P3K & Konsumsi',
-                        border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.task_alt),
                       ),
                     ),
@@ -926,7 +926,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       maxLines: 2,
                       decoration: const InputDecoration(
                         labelText: 'Catatan / Deskripsi',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -984,8 +983,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Tugas "${newTask.title}" berhasil ditambahkan! ✅'),
-                              backgroundColor: Colors.teal.shade700,
+                              content: Text('Tugas "${newTask.title}" berhasil ditambahkan!'),
+                              backgroundColor: Colors.green.shade700,
                             ),
                           );
                         },
@@ -1001,4 +1000,56 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       },
     );
   }
+}
+
+class _NotFoundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    const primary = Color(0xFF16A34A);
+
+    // Calendar
+    final bodyRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(w * 0.18, h * 0.12, w * 0.64, h * 0.7),
+      const Radius.circular(14),
+    );
+    canvas.drawRRect(bodyRect, Paint()..color = primary.withValues(alpha: 0.08));
+    canvas.drawRRect(
+      bodyRect,
+      Paint()
+        ..color = primary.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+    // Bindings
+    final ringPaint = Paint()
+      ..color = primary.withValues(alpha: 0.7)
+      ..strokeWidth = 2.5;
+    for (int i = 0; i < 2; i++) {
+      final cx = w * (0.32 + i * 0.36);
+      canvas.drawArc(
+        Rect.fromLTWH(cx - 4, h * 0.08, 8, h * 0.16),
+        3.14159,
+        3.14159,
+        false,
+        ringPaint,
+      );
+    }
+    // Question mark
+    final qPaint = Paint()
+      ..color = primary
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final path = Path()
+      ..moveTo(w * 0.44, h * 0.4)
+      ..quadraticBezierTo(w * 0.52, h * 0.26, w * 0.56, h * 0.4)
+      ..quadraticBezierTo(w * 0.6, h * 0.52, w * 0.5, h * 0.58);
+    canvas.drawPath(path, qPaint);
+    canvas.drawCircle(Offset(w * 0.49, h * 0.72), 2.5, Paint()..color = primary);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

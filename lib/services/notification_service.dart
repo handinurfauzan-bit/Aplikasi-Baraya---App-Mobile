@@ -106,7 +106,7 @@ class NotificationService {
 
       await _plugin.zonedSchedule(
         id,
-        '⏰ Reminder H-1: $eventTitle',
+        'Reminder H-1: $eventTitle',
         body,
         tzDateTime,
         details,

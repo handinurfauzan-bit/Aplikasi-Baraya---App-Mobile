@@ -29,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
@@ -127,7 +127,17 @@ class ProfileScreen extends StatelessWidget {
                 color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(child: Text('Belum ada tugas yang dipegang.')),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 70,
+                    height: 56,
+                    child: CustomPaint(painter: _ProfileTaskEmptyPainter()),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text('Belum ada tugas yang dipegang.'),
+                ],
+              ),
             )
           else
             Container(
@@ -190,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 if (event != null)
                                   Text(
-                                    '📅 ${event.title}',
+                                    event.title,
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: colorScheme.onSurfaceVariant,
@@ -327,7 +337,6 @@ class ProfileScreen extends StatelessWidget {
                   controller: nameController,
                   decoration: const InputDecoration(
                     labelText: 'Nama Lengkap',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
@@ -337,7 +346,6 @@ class ProfileScreen extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Peran / Role',
                     hintText: 'misal: Ketua Panitia',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.badge_outlined),
                   ),
                 ),
@@ -361,8 +369,8 @@ class ProfileScreen extends StatelessWidget {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Profil berhasil diperbarui ✏️'),
-                          backgroundColor: Colors.teal,
+                          content: Text('Profil berhasil diperbarui'),
+                          backgroundColor: Colors.green,
                         ),
                       );
                     },
@@ -403,4 +411,51 @@ class _ProfileStat extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ProfileTaskEmptyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    const primary = Color(0xFF16A34A);
+
+    // Clipboard body
+    final bodyRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(w * 0.18, h * 0.1, w * 0.64, h * 0.8),
+      const Radius.circular(12),
+    );
+    canvas.drawRRect(bodyRect, Paint()..color = primary.withValues(alpha: 0.08));
+    canvas.drawRRect(
+      bodyRect,
+      Paint()
+        ..color = primary.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+    // Clip
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.4, h * 0.02, w * 0.2, h * 0.14),
+        const Radius.circular(6),
+      ),
+      Paint()..color = primary.withValues(alpha: 0.5),
+    );
+    // Lines
+    final linePaint = Paint()
+      ..color = primary.withValues(alpha: 0.35)
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    for (int i = 0; i < 2; i++) {
+      final y = h * (0.36 + i * 0.24);
+      canvas.drawLine(
+        Offset(w * 0.28, y),
+        Offset(w * 0.72, y),
+        linePaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

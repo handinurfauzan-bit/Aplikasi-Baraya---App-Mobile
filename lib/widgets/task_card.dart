@@ -58,9 +58,9 @@ class TaskCard extends StatelessWidget {
                   height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDone ? Colors.teal : Colors.transparent,
+                    color: isDone ? Colors.green : Colors.transparent,
                     border: Border.all(
-                      color: isDone ? Colors.teal : colorScheme.outline,
+                      color: isDone ? Colors.green : colorScheme.outline,
                       width: 2,
                     ),
                   ),
