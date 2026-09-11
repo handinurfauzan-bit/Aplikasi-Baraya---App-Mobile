@@ -23,7 +23,7 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 - **Pengingat H-1 (Reminder)**: Notifikasi terjadwal 24 jam sebelum acara dimulai agar anggota tidak lupa.
 - **Buat Event Baru**: Form pembuatan event komunitas dengan DatePicker dan TimePicker.
 
-### 2. 📢 Pengumuman Terpisah dari Obrolan
+### 2. Pengumuman Terpisah dari Obrolan
 - **Feed Khusus Info Penting**: Terpisah total dari obrolan kasual sehingga tidak ada info yang tertimbun.
 - **Fitur Pin / Sematkan**: Pengumuman penting (seperti rute darurat atau info iuran kas) dapat di-pin di bagian atas.
 - **Kategori Pengumuman**: Filter cepat berdasarkan tag (*Penting*, *Keuangan*, *Aturan*, *Umum*).
