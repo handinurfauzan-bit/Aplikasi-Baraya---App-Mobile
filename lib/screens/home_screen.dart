@@ -5,11 +5,28 @@ import '../models/models.dart';
 import '../services/app_settings.dart';
 import '../services/data_service.dart';
 import '../services/notification_service.dart';
+import '../utils/countdown.dart';
 import '../widgets/announcement_feed.dart';
 import '../widgets/event_card.dart';
 import '../widgets/task_card.dart';
 import 'event_detail_screen.dart';
 import 'members_screen.dart';
+import 'profile_screen.dart';
+
+const List<String> _bulan = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember'
+];
 
 class HomeScreen extends StatefulWidget {
   final String communityId;
@@ -30,11 +47,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late final NotificationService _notificationService;
   String _taskFilterEventId = 'all';
   String _communityId = 'kumpul_001';
+  String _searchQuery = '';
+  String _rsvpFilter = 'semua'; // 'semua' | 'joined' | 'maybe' | 'declined' | 'belum'
+  String _monthFilter = 'semua'; // 'semua' | 'bulan_ini' | 'bulan_depan'
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -45,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -52,7 +74,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final dataService = context.watch<DataService>();
     final settings = context.watch<AppSettings>();
-    _communityId = settings.communityId;
+    if (_communityId != settings.communityId) {
+      _communityId = settings.communityId;
+      _searchController.clear();
+      _searchQuery = '';
+      _rsvpFilter = 'semua';
+      _monthFilter = 'semua';
+      _taskFilterEventId = 'all';
+    }
     final community = dataService.getCommunity(_communityId);
     final events = dataService.getEventsForCommunity(_communityId);
     final announcements = dataService.getAnnouncementsForCommunity(_communityId);
@@ -70,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              community?.name ?? 'Kumpul.in',
+              community?.name ?? 'Baraya',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             Text(
@@ -111,57 +140,78 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             },
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.amberAccent,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          tabs: [
-            Tab(
-              icon: const Icon(Icons.calendar_month, size: 20),
-              text: 'Event (${events.length})',
-            ),
-            Tab(
-              icon: const Icon(Icons.campaign, size: 20),
-              text: 'Pengumuman (${announcements.length})',
-            ),
-            Tab(
-              icon: const Icon(Icons.checklist, size: 20),
-              text: 'Tugas (${allTasks.length})',
-            ),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          // TAB 1: EVENT & JADWAL
-          _buildEventsTab(dataService, events),
+          if (settings.demoMode) _buildDemoBanner(context, dataService, settings),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // TAB 1: EVENT & JADWAL
+                _buildEventsTab(dataService, events),
 
-          // TAB 2: PENGUMUMAN TERPISAH
-          _buildAnnouncementsTab(dataService, announcements),
+                // TAB 2: PENGUMUMAN TERPISAH
+                _buildAnnouncementsTab(dataService, announcements),
 
-          // TAB 3: PEMBAGIAN TUGAS
-          _buildTasksTab(dataService, events, allTasks),
+                // TAB 3: PEMBAGIAN TUGAS
+                _buildTasksTab(dataService, events, allTasks),
+
+                // TAB 4: PROFIL
+                const ProfileScreen(),
+              ],
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (_tabController.index == 0) {
-            _showAddEventDialog(context, dataService);
-          } else if (_tabController.index == 1) {
-            _showAddAnnouncementDialog(context, dataService);
-          } else {
-            _showAddTaskDialog(context, dataService, events);
-          }
-        },
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        icon: Icon(_getFabIcon()),
-        label: Text(_getFabLabel()),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _tabController.index,
+        onTap: (index) => _tabController.animateTo(index),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.onSurfaceVariant,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.calendar_month),
+            activeIcon: const Icon(Icons.calendar_month, size: 26),
+            label: 'Event',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.campaign),
+            activeIcon: const Icon(Icons.campaign, size: 26),
+            label: 'Pengumuman',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.checklist),
+            activeIcon: const Icon(Icons.checklist, size: 26),
+            label: 'Tugas',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            activeIcon: const Icon(Icons.person, size: 26),
+            label: 'Profil',
+          ),
+        ],
       ),
+      floatingActionButton: _tabController.index == 3
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                if (_tabController.index == 0) {
+                  _showAddEventDialog(context, dataService);
+                } else if (_tabController.index == 1) {
+                  _showAnnouncementFormDialog(context, dataService);
+                } else {
+                  _showAddTaskDialog(context, dataService, events);
+                }
+              },
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              icon: Icon(_getFabIcon()),
+              label: Text(_getFabLabel()),
+            ),
     );
   }
 
@@ -171,8 +221,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         return Icons.add_alarm;
       case 1:
         return Icons.post_add;
-      default:
+      case 2:
         return Icons.add_task;
+      default:
+        return Icons.person; // Profile tab - no FAB needed
     }
   }
 
@@ -182,8 +234,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         return 'Buat Event';
       case 1:
         return 'Pengumuman Baru';
-      default:
+      case 2:
         return 'Tambah Tugas';
+      default:
+        return ''; // Profile tab - no FAB label
     }
   }
 
@@ -207,103 +261,463 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       );
     }
 
+    final now = DateTime.now();
+    final hasActiveFilters = _searchQuery.isNotEmpty ||
+        _rsvpFilter != 'semua' ||
+        _monthFilter != 'semua';
+
+    final filtered = events.where((event) {
+      if (_searchQuery.isNotEmpty) {
+        final q = _searchQuery.toLowerCase();
+        if (!event.title.toLowerCase().contains(q) &&
+            !event.location.toLowerCase().contains(q)) {
+          return false;
+        }
+      }
+      switch (_rsvpFilter) {
+        case 'joined':
+          if (event.rsvps[dataService.currentUserId] != 'joined') return false;
+          break;
+        case 'maybe':
+          if (event.rsvps[dataService.currentUserId] != 'maybe') return false;
+          break;
+        case 'declined':
+          if (event.rsvps[dataService.currentUserId] != 'declined') return false;
+          break;
+        case 'belum':
+          if (event.rsvps[dataService.currentUserId] != null) return false;
+          break;
+      }
+      if (_monthFilter == 'bulan_ini') {
+        if (event.dateTime.month != now.month || event.dateTime.year != now.year) {
+          return false;
+        }
+      } else if (_monthFilter == 'bulan_depan') {
+        final nextMonth = DateTime(now.year, now.month + 1, 1);
+        if (event.dateTime.month != nextMonth.month ||
+            event.dateTime.year != nextMonth.year) {
+          return false;
+        }
+      }
+      return true;
+    }).toList();
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Info Banner
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        // HERO: highlight event terdekat (hanya saat filter non-aktif)
+        if (!hasActiveFilters)
+          _buildNextEventHero(dataService, events, now),
+        const SizedBox(height: 16),
+
+        // Search Bar
+        TextField(
+          controller: _searchController,
+          onChanged: (value) => setState(() => _searchQuery = value),
+          decoration: InputDecoration(
+            hintText: 'Cari event (judul / lokasi)...',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  )
+                : null,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
           ),
+        ),
+        const SizedBox(height: 12),
+
+        // Filter chips: status RSVP
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Icon(Icons.touch_app, size: 18, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Ketuk event untuk lihat detail, RSVP, dan tugas panitia.',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
+              _buildFilterChip(
+                  label: 'Semua',
+                  icon: Icons.filter_list,
+                  selected: _rsvpFilter == 'semua',
+                  onTap: () => setState(() => _rsvpFilter = 'semua')),
+              _buildFilterChip(
+                  label: 'Ikut',
+                  icon: Icons.check_circle_outline,
+                  selected: _rsvpFilter == 'joined',
+                  onTap: () => setState(() => _rsvpFilter = 'joined')),
+              _buildFilterChip(
+                  label: 'Ragu',
+                  icon: Icons.help_outline,
+                  selected: _rsvpFilter == 'maybe',
+                  onTap: () => setState(() => _rsvpFilter = 'maybe')),
+              _buildFilterChip(
+                  label: 'Tidak',
+                  icon: Icons.cancel_outlined,
+                  selected: _rsvpFilter == 'declined',
+                  onTap: () => setState(() => _rsvpFilter = 'declined')),
+              _buildFilterChip(
+                  label: 'Belum RSVP',
+                  icon: Icons.event_note,
+                  selected: _rsvpFilter == 'belum',
+                  onTap: () => setState(() => _rsvpFilter = 'belum')),
             ],
           ),
         ),
+        const SizedBox(height: 8),
 
-        // Events List
-        ...events.map((event) {
-          final tasks = dataService.getTasksForEvent(event.id);
+        // Filter chips: waktu
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _buildFilterChip(
+                  label: 'Semua Waktu',
+                  selected: _monthFilter == 'semua',
+                  onTap: () => setState(() => _monthFilter = 'semua')),
+              _buildFilterChip(
+                  label: 'Bulan Ini',
+                  selected: _monthFilter == 'bulan_ini',
+                  onTap: () => setState(() => _monthFilter = 'bulan_ini')),
+              _buildFilterChip(
+                  label: 'Bulan Depan',
+                  selected: _monthFilter == 'bulan_depan',
+                  onTap: () => setState(() => _monthFilter = 'bulan_depan')),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
 
-          return EventCard(
-            event: event,
-            currentUserId: dataService.currentUserId,
-            isSelected: false,
-            taskCount: tasks.length,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => EventDetailScreen(
-                    communityId: _communityId,
-                    eventId: event.id,
-                  ),
+        if (filtered.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.search_off,
+                    size: 40, color: Theme.of(context).colorScheme.outline),
+                const SizedBox(height: 8),
+                const Text(
+                  'Tidak ada event yang cocok dengan filter.',
+                  textAlign: TextAlign.center,
                 ),
-              );
-            },
-            onRSVP: (status) {
-              dataService.setRSVP(event.id, status);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    status == 'joined'
-                        ? 'Anda konfirmasi Ikut pada "${event.title}"! 🎉'
-                        : status == 'maybe'
-                            ? 'Status Anda diubah ke Ragu-ragu.'
-                            : 'Status Anda diubah ke Tidak Ikut.',
-                  ),
-                  duration: const Duration(seconds: 2),
+                const SizedBox(height: 4),
+                TextButton.icon(
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchQuery = '';
+                      _rsvpFilter = 'semua';
+                      _monthFilter = 'semua';
+                    });
+                  },
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text('Reset Filter'),
                 ),
-              );
-            },
-            onToggleReminder: () async {
-              final newStatus = !event.reminderSet;
-              dataService.toggleEventReminder(event.id, newStatus);
-              if (newStatus) {
-                await _notificationService.scheduleH1Reminder(
-                  id: event.id.hashCode,
-                  eventTitle: event.title,
-                  eventDateTime: event.dateTime,
-                  location: event.location,
+              ],
+            ),
+          )
+        else ...[
+          Text(
+            '${filtered.length} event ditemukan',
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Events List
+          ...filtered.map((event) {
+            final tasks = dataService.getTasksForEvent(event.id);
+
+            return EventCard(
+              event: event,
+              currentUserId: dataService.currentUserId,
+              isSelected: false,
+              taskCount: tasks.length,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => EventDetailScreen(
+                      communityId: _communityId,
+                      eventId: event.id,
+                    ),
+                  ),
                 );
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('⏰ Pengingat H-1 aktif untuk "${event.title}"'),
-                      backgroundColor: Colors.teal.shade700,
+              },
+              onRSVP: (status) {
+                dataService.setRSVP(event.id, status);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      status == 'joined'
+                          ? 'Anda konfirmasi Ikut pada "${event.title}"! 🎉'
+                          : status == 'maybe'
+                              ? 'Status Anda diubah ke Ragu-ragu.'
+                              : 'Status Anda diubah ke Tidak Ikut.',
                     ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              onToggleReminder: () async {
+                final newStatus = !event.reminderSet;
+                dataService.toggleEventReminder(event.id, newStatus);
+                if (newStatus) {
+                  await _notificationService.scheduleH1Reminder(
+                    id: event.id.hashCode,
+                    eventTitle: event.title,
+                    eventDateTime: event.dateTime,
+                    location: event.location,
                   );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('⏰ Pengingat H-1 aktif untuk "${event.title}"'),
+                        backgroundColor: Colors.teal.shade700,
+                      ),
+                    );
+                  }
+                } else {
+                  await _notificationService.cancel(event.id.hashCode);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Pengingat dimatikan untuk "${event.title}"'),
+                      ),
+                    );
+                  }
                 }
-              } else {
-                await _notificationService.cancel(event.id.hashCode);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Pengingat dimatikan untuk "${event.title}"'),
-                    ),
-                  );
-                }
-              }
-            },
-          );
-        }),
+              },
+            );
+          }),
+        ],
 
         const SizedBox(height: 72),
       ],
     );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+    IconData? icon,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ChoiceChip(
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 15, color: selected ? colorScheme.onPrimaryContainer : null),
+              const SizedBox(width: 4),
+            ],
+            Text(label),
+          ],
+        ),
+        selected: selected,
+        onSelected: (_) => onTap(),
+        showCheckmark: false,
+        selectedColor: colorScheme.primaryContainer,
+        labelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+          color: selected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+        ),
+        side: BorderSide(color: colorScheme.outlineVariant),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      ),
+    );
+  }
+
+  Widget _buildNextEventHero(
+      DataService dataService, List<Event> events, DateTime now) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final nextEvent = events.firstWhere(
+      (e) => e.dateTime.isAfter(now),
+      orElse: () => events.last,
+    );
+    final members = dataService.getMembers(_communityId);
+    final joined = nextEvent.rsvps.values.where((s) => s == 'joined').length;
+    final maybe = nextEvent.rsvps.values.where((s) => s == 'maybe').length;
+    final tasks = dataService.getTasksForEvent(nextEvent.id);
+    final completed = tasks.where((t) => t.isCompleted).length;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => EventDetailScreen(
+                communityId: _communityId,
+                eventId: nextEvent.id,
+              ),
+            ),
+          );
+        },
+        child: Ink(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                colorScheme.primary,
+                colorScheme.primary.withValues(alpha: 0.75),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.bolt, color: Colors.white.withValues(alpha: 0.9), size: 18),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'EVENT TERDEKAT',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade400,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      countdownShortLabel(nextEvent.dateTime),
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                nextEvent.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.schedule, size: 16, color: Colors.white70),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '${_formatDate(nextEvent.dateTime)} • Pukul ${nextEvent.dateTime.hour.toString().padLeft(2, '0')}:${nextEvent.dateTime.minute.toString().padLeft(2, '0')}',
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, size: 16, color: Colors.white70),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      nextEvent.location,
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: _heroStatChip(
+                        icon: Icons.people,
+                        label: '${joined + maybe}/${members.length} berencana hadir'),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: _heroStatChip(
+                        icon: Icons.checklist,
+                        label: tasks.isEmpty
+                            ? 'Belum ada tugas panitia'
+                            : 'Tugas panitia $completed/${tasks.length} selesai'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              if (tasks.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: completed / tasks.length,
+                    minHeight: 6,
+                    backgroundColor: Colors.white24,
+                    valueColor: const AlwaysStoppedAnimation(Color(0xFFFBBF24)),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _heroStatChip({required IconData icon, required String label}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: Colors.white),
+          const SizedBox(width: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime d) {
+    return '${d.day} ${_bulan[d.month - 1]} ${d.year}';
   }
 
   // ==================== TAB 2: PENGUMUMAN ====================
@@ -341,7 +755,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             dataService.togglePinAnnouncement(id);
           },
           onAnnouncementTap: (ann) {
-            _showAnnouncementDetailSheet(context, ann);
+            _showAnnouncementDetailSheet(context, dataService, ann);
           },
         ),
 
@@ -657,11 +1071,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _showAddAnnouncementDialog(BuildContext context, DataService dataService) {
-    final titleController = TextEditingController();
-    final bodyController = TextEditingController();
-    String category = 'Penting';
-    bool pinned = true;
+  void _showAnnouncementFormDialog(BuildContext context, DataService dataService,
+      {Announcement? ann}) {
+    final isEditing = ann != null;
+    final titleController = TextEditingController(text: ann?.title);
+    final bodyController = TextEditingController(text: ann?.body);
+    String category = ann?.category ?? 'Penting';
+    bool pinned = ann?.pinned ?? true;
 
     showModalBottomSheet(
       context: context,
@@ -687,9 +1103,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Buat Pengumuman Baru',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        Text(
+                          isEditing ? 'Edit Pengumuman' : 'Buat Pengumuman Baru',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
@@ -755,28 +1171,49 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             return;
                           }
 
-                          final newAnn = Announcement(
-                            id: 'ann_${DateTime.now().millisecondsSinceEpoch}',
-                            communityId: _communityId,
-                            title: titleController.text.trim(),
-                            body: bodyController.text.trim(),
-                            authorId: dataService.currentUserId,
-                            authorName: dataService.currentUser.name,
-                            category: category,
-                            pinned: pinned,
-                            createdAt: DateTime.now(),
-                          );
-
-                          dataService.addAnnouncement(newAnn);
-                          Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Pengumuman "${newAnn.title}" diterbitkan! 📢'),
-                              backgroundColor: Colors.teal.shade700,
-                            ),
-                          );
+                          if (isEditing) {
+                            final updated = Announcement(
+                              id: ann.id,
+                              communityId: _communityId,
+                              title: titleController.text.trim(),
+                              body: bodyController.text.trim(),
+                              authorId: ann.authorId,
+                              authorName: ann.authorName,
+                              category: category,
+                              pinned: pinned,
+                              createdAt: ann.createdAt,
+                            );
+                            dataService.updateAnnouncement(updated);
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Pengumuman "${updated.title}" diperbarui ✏️'),
+                                backgroundColor: Colors.teal.shade700,
+                              ),
+                            );
+                          } else {
+                            final newAnn = Announcement(
+                              id: 'ann_${DateTime.now().millisecondsSinceEpoch}',
+                              communityId: _communityId,
+                              title: titleController.text.trim(),
+                              body: bodyController.text.trim(),
+                              authorId: dataService.currentUserId,
+                              authorName: dataService.currentUser.name,
+                              category: category,
+                              pinned: pinned,
+                              createdAt: DateTime.now(),
+                            );
+                            dataService.addAnnouncement(newAnn);
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Pengumuman "${newAnn.title}" diterbitkan! 📢'),
+                                backgroundColor: Colors.teal.shade700,
+                              ),
+                            );
+                          }
                         },
-                        child: const Text('Publikasikan Pengumuman'),
+                        child: Text(isEditing ? 'Simpan Perubahan' : 'Publikasikan Pengumuman'),
                       ),
                     ),
                   ],
@@ -962,6 +1399,69 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  Widget _buildDemoBanner(
+      BuildContext context, DataService dataService, AppSettings settings) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Material(
+      color: colorScheme.tertiaryContainer,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Icon(Icons.movie_filter, size: 20, color: colorScheme.onTertiaryContainer),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'MODE DEMO',
+                    style: TextStyle(
+                      fontSize: 10,
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                  Text(
+                    'Data contoh tersimpan lokal di perangkat ini.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                dataService.resetToSeedData();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Data demo dikembalikan ke versi awal 🔄'),
+                    backgroundColor: Colors.teal.shade700,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.onTertiaryContainer,
+              ),
+              child: const Text('Reset Data'),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, size: 18),
+              tooltip: 'Sembunyikan banner',
+              color: colorScheme.onTertiaryContainer,
+              onPressed: () => settings.setDemoMode(false),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showCommunitySwitcher(BuildContext context) {
     final dataService = context.read<DataService>();
     final communities = dataService.getAllCommunities();
@@ -1050,14 +1550,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _showAnnouncementDetailSheet(BuildContext context, Announcement ann) {
+  void _showAnnouncementDetailSheet(
+      BuildContext context, DataService dataService, Announcement ann) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return Padding(
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1081,6 +1582,52 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                   ),
                   const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 20),
+                    tooltip: 'Edit Pengumuman',
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _showAnnouncementFormDialog(context, dataService, ann: ann);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 20),
+                    tooltip: 'Hapus Pengumuman',
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (dialogCtx) => AlertDialog(
+                          title: const Text('Hapus Pengumuman?'),
+                          content: Text('"${ann.title}" akan dihapus permanen.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogCtx, false),
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogCtx, true),
+                              child: const Text(
+                                'Hapus',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true) {
+                        dataService.deleteAnnouncement(ann.id);
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Pengumuman "${ann.title}" dihapus 🗑️'),
+                              backgroundColor: Colors.red.shade700,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(ctx),

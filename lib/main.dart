@@ -31,7 +31,7 @@ class KumpulApp extends StatelessWidget {
       child: Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(
-            title: 'Kumpul.in',
+            title: 'Baraya',
             debugShowCheckedModeBanner: false,
             themeMode: appSettings.themeMode,
             theme: _buildTheme(Brightness.light),

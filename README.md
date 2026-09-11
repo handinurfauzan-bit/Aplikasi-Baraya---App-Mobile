@@ -1,4 +1,4 @@
-# Kumpul.in 🚴‍♂️👥
+# Baraya 🚴‍♂️👥
 > **"Satu tempat buat semua urusan komunitasmu"**
 
 Aplikasi koordinasi komunitas hobi yang dirancang untuk mengatasi masalah informasi penting yang sering tertimbun obrolan chat grup (WhatsApp/Telegram).
@@ -11,7 +11,7 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 - Pengumuman penting dari pengurus tidak terbaca.
 - Pembagian tugas kepanitiaan dadakan menjadi kacau dan tidak terlacak.
 
-**Kumpul.in** menyelesaikan masalah ini dengan 3 fitur inti yang saling terhubung secara koheren:
+**Baraya** menyelesaikan masalah ini dengan 3 fitur inti yang saling terhubung secara koheren:
 
 ---
 

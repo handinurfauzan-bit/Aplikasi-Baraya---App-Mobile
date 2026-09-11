@@ -65,6 +65,8 @@ void main() {
 
     // Verify progress card and task items
     expect(find.text('Progress Tugas Panitia'), findsOneWidget);
+    await tester.drag(find.byType(ListView).first, const Offset(0, -400));
+    await tester.pumpAndSettle();
     expect(find.text('Siapkan Pisang & Air Mineral'), findsOneWidget);
   });
 
@@ -131,7 +133,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Anggota Komunitas'), findsOneWidget);
-    expect(find.text('Dimas Aditya (Anda)'), findsOneWidget);
+    expect(find.text('Dimas Aditya'), findsOneWidget);
+    expect(find.text('Anda'), findsOneWidget);
     expect(find.text('Budi Santoso'), findsOneWidget);
 
     // Open a member detail
@@ -175,5 +178,106 @@ void main() {
     expect(restored.getEvent('event_001')!.rsvps['user_001'], 'maybe'); // RSVP persisted
     expect(restored.getAnnouncementsForCommunity('kumpul_001')
         .firstWhere((a) => a.id == 'ann_003').pinned, isTrue);
+  });
+
+  test('DataService reset restores seed data', () async {
+    SharedPreferences.setMockInitialValues({});
+
+    final ds = DataService();
+    await ds.init();
+    ds.addEvent(Event(
+      id: 'event_x',
+      communityId: 'kumpul_001',
+      title: 'Event Shenanigans',
+      description: '',
+      dateTime: DateTime.now().add(const Duration(days: 10)),
+      creatorId: 'user_001',
+      reminderSet: false,
+    ));
+    expect(ds.getEvent('event_x'), isNotNull);
+
+    ds.resetToSeedData();
+
+    expect(ds.getEvent('event_x'), isNull);
+    expect(ds.getAllCommunities().length, 3);
+    expect(ds.getEventsForCommunity('kumpul_001').length, 3);
+  });
+
+  testWidgets('Search filters events by title', (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.enterText(find.byType(TextField), 'Monas');
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 event ditemukan'), findsOneWidget);
+    expect(find.text('Gowes Minggu Pagi ke Monas'), findsWidgets);
+    expect(find.text('Kopdar & Workshop Servis Mandiri'), findsNothing);
+  });
+
+  testWidgets('Profile screen opens from app bar avatar', (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.tap(find.text('D'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Profil Saya'), findsOneWidget);
+    expect(find.text('Dimas Aditya'), findsWidgets);
+    await tester.scrollUntilVisible(
+      find.text('Komunitas Saya'),
+      120,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(find.text('Komunitas Saya'), findsOneWidget);
+  });
+
+  testWidgets('Announcement edit updates content', (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.tap(find.text('Pengumuman (3)'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.textContaining('Jersey Resmi Batavia'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.textContaining('Jersey Resmi Batavia'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Jersey Resmi Batavia'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.edit_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Pengumuman'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(TextField, '🚴 Jersey Resmi Batavia 2026 Sudah Siap Dipesan'),
+      'Jersey Edisi Demo 2026',
+    );
+    await tester.tap(find.text('Simpan Perubahan'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Jersey Edisi Demo 2026'), findsWidgets);
+  });
+
+  testWidgets('Announcement delete removes it', (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.tap(find.text('Pengumuman (3)'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.textContaining('Aturan & Etika Gowes Bareng'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.textContaining('Aturan & Etika Gowes Bareng'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Aturan & Etika Gowes Bareng'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hapus'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pengumuman (2)'), findsOneWidget);
+    expect(find.text('Aturan & Etika Gowes Bareng (Wajib Dibaca)'), findsNothing);
   });
 }

@@ -6,7 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   static const String channelId = 'kumpul_in_reminders';
-  static const String channelName = 'Pengingat Event Kumpul.in';
+  static const String channelName = 'Pengingat Event Baraya';
   static const String channelDescription = 'Notifikasi H-1 sebelum kegiatan komunitas';
 
   final FlutterLocalNotificationsPlugin _plugin;

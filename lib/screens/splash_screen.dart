@@ -143,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
               FadeTransition(
                 opacity: _fadeLogo,
                 child: const Text(
-                  'Kumpul.in',
+                  'Baraya',
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w800,

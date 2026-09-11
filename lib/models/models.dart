@@ -11,6 +11,19 @@ class User {
     this.role = 'Anggota',
   });
 
+  User copyWith({
+    String? name,
+    String? avatarUrl,
+    String? role,
+  }) {
+    return User(
+      id: id,
+      name: name ?? this.name,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      role: role ?? this.role,
+    );
+  }
+
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'] as String,
         name: json['name'] as String,

@@ -94,7 +94,7 @@ class DataService extends ChangeNotifier {
     final usersList = [
       const User(
         id: 'user_001',
-        name: 'Dimas Aditya (Anda)',
+        name: 'Dimas Aditya',
         avatarUrl: '',
         role: 'Anggota Aktif',
       ),
@@ -308,7 +308,7 @@ class DataService extends ChangeNotifier {
     final members = [
       const User(
         id: 'user_101',
-        name: 'Nina Kusuma (Anda)',
+        name: 'Nina Kusuma',
         avatarUrl: '',
         role: 'Anggota Aktif',
       ),
@@ -428,7 +428,7 @@ class DataService extends ChangeNotifier {
     final members = [
       const User(
         id: 'user_201',
-        name: 'Caca Rahayu (Anda)',
+        name: 'Caca Rahayu',
         avatarUrl: '',
         role: 'Anggota Aktif',
       ),
@@ -556,6 +556,8 @@ class DataService extends ChangeNotifier {
 
   List<Community> getAllCommunities() =>
       _communities.values.toList()..sort((a, b) => a.name.compareTo(b.name));
+
+  Event? getEventById(String eventId) => _events[eventId];
 
   Community? getCommunity(String id) => _communities[id];
 
@@ -695,6 +697,49 @@ class DataService extends ChangeNotifier {
 
   void addAnnouncement(Announcement announcement) {
     _announcements[announcement.id] = announcement;
+    notifyListeners();
+    _persist();
+  }
+
+  void updateAnnouncement(Announcement announcement) {
+    _announcements[announcement.id] = announcement;
+    notifyListeners();
+    _persist();
+  }
+
+  void deleteAnnouncement(String announcementId) {
+    _announcements.remove(announcementId);
+    notifyListeners();
+    _persist();
+  }
+
+  void updateUser(User user) {
+    _users[user.id] = user;
+
+    for (final id in _communities.keys.toList()) {
+      final c = _communities[id]!;
+      if (c.members.any((m) => m.id == user.id)) {
+        _communities[id] = Community(
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          category: c.category,
+          members: c.members.map((m) => m.id == user.id ? user : m).toList(),
+        );
+      }
+    }
+
+    notifyListeners();
+    _persist();
+  }
+
+  void resetToSeedData() {
+    _users.clear();
+    _communities.clear();
+    _events.clear();
+    _announcements.clear();
+    _tasks.clear();
+    _loadInitialData();
     notifyListeners();
     _persist();
   }
