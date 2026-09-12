@@ -158,7 +158,7 @@ class MembersScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // RSVP section
+
                 _sectionHeader(ctx, 'Status Event Mereka'),
                 const SizedBox(height: 6),
                 if (rsvps.isEmpty)

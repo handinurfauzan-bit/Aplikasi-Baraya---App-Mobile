@@ -37,7 +37,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Category Filter Chips
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -157,7 +157,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Bar: Pinned Badge + Category + Pin Button
+
               Row(
                 children: [
                   if (ann.pinned) ...[
@@ -187,7 +187,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
                     ),
                   ],
 
-                  // Category tag
+
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
@@ -207,7 +207,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
 
                   const Spacer(),
 
-                  // Pin / Unpin button
+
                   IconButton(
                     icon: Icon(
                       ann.pinned ? Icons.push_pin : Icons.push_pin_outlined,
@@ -224,7 +224,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
 
               const SizedBox(height: 10),
 
-              // Title
+
               Text(
                 ann.title,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -235,7 +235,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
 
               const SizedBox(height: 6),
 
-              // Body
+
               Text(
                 ann.body,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -248,7 +248,7 @@ class _AnnouncementFeedState extends State<AnnouncementFeed> {
               const Divider(height: 1),
               const SizedBox(height: 10),
 
-              // Author & Time
+
               Row(
                 children: [
                   CircleAvatar(
@@ -312,7 +312,7 @@ class _AnnouncementEmptyPainter extends CustomPainter {
     final h = size.height;
     const primary = Color(0xFF16A34A);
 
-    // Megaphone body
+
     final megaphonePaint = Paint()..color = primary.withValues(alpha: 0.12);
     final horn = Path()
       ..moveTo(w * 0.16, h * 0.3)
@@ -328,14 +328,14 @@ class _AnnouncementEmptyPainter extends CustomPainter {
       ..strokeWidth = 2.5;
     canvas.drawPath(horn, strokePaint);
 
-    // Handle
+
     canvas.drawLine(
       Offset(w * 0.16, h * 0.3),
       Offset(w * 0.16, h * 0.62),
       strokePaint,
     );
 
-    // Sound waves
+
     final wavePaint = Paint()
       ..color = primary.withValues(alpha: 0.7)
       ..style = PaintingStyle.stroke
@@ -356,7 +356,7 @@ class _AnnouncementEmptyPainter extends CustomPainter {
       wavePaint,
     );
 
-    // Checkmark badge
+
     canvas.drawCircle(
       Offset(w * 0.3, h * 0.72),
       12,

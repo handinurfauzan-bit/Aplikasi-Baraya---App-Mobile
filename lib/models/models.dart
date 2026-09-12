@@ -81,7 +81,7 @@ class Event {
   final DateTime dateTime;
   final String location;
   final String creatorId;
-  final Map<String, String> rsvps; // userId -> 'joined' | 'maybe' | 'declined'
+  final Map<String, String> rsvps;
   final bool reminderSet;
 
   Event({
@@ -159,7 +159,7 @@ class Announcement {
   final String authorName;
   final DateTime createdAt;
   final bool pinned;
-  final String category; // 'Penting', 'Jadwal', 'Keuangan', 'Umum'
+  final String category;
 
   const Announcement({
     required this.id,

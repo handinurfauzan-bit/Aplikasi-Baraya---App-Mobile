@@ -50,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   String _taskFilterEventId = 'all';
   String _communityId = 'kumpul_001';
   String _searchQuery = '';
-  String _rsvpFilter = 'semua'; // 'semua' | 'joined' | 'maybe' | 'declined' | 'belum'
-  String _monthFilter = 'semua'; // 'semua' | 'bulan_ini' | 'bulan_depan'
+  String _rsvpFilter = 'semua';
+  String _monthFilter = 'semua';
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -163,16 +163,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: TabBarView(
               controller: _tabController,
               children: [
-                // TAB 1: EVENT & JADWAL
+
                 _buildEventsTab(dataService, events),
 
-                // TAB 2: PENGUMUMAN TERPISAH
+
                 _buildAnnouncementsTab(dataService, announcements),
 
-                // TAB 3: PEMBAGIAN TUGAS
+
                 _buildTasksTab(dataService, events, allTasks),
 
-                // TAB 4: PROFIL
+
                 const ProfileScreen(),
               ],
             ),
@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       case 2:
         return Icons.add_task;
       default:
-        return Icons.person; // Profile tab - no FAB needed
+        return Icons.person;
     }
   }
 
@@ -252,11 +252,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       case 2:
         return 'Tambah Tugas';
       default:
-        return ''; // Profile tab - no FAB label
+        return '';
     }
   }
 
-  // ==================== TAB 1: EVENTS ====================
+
   Widget _buildEventsTab(DataService dataService, List<Event> events) {
     if (events.isEmpty) {
       return Center(
@@ -324,12 +324,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // HERO: highlight event terdekat (hanya saat filter non-aktif)
+
         if (!hasActiveFilters)
           _buildNextEventHero(dataService, events, now),
         const SizedBox(height: 16),
 
-        // Search Bar
+
         TextField(
           controller: _searchController,
           onChanged: (value) => setState(() => _searchQuery = value),
@@ -351,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         const SizedBox(height: 12),
 
-        // Filter chips: status RSVP
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -386,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         const SizedBox(height: 8),
 
-        // Filter chips: waktu
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -453,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 8),
 
-          // Events List
+
           ...filtered.map((event) {
             final tasks = dataService.getTasksForEvent(event.id);
 
@@ -736,13 +736,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return '${d.day} ${_bulan[d.month - 1]} ${d.year}';
   }
 
-  // ==================== TAB 2: PENGUMUMAN ====================
+
   Widget _buildAnnouncementsTab(
       DataService dataService, List<Announcement> announcements) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Explanatory Header
+
         Container(
           padding: const EdgeInsets.all(12),
           margin: const EdgeInsets.only(bottom: 14),
@@ -780,7 +780,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  // ==================== TAB 3: PEMBAGIAN TUGAS ====================
+
   Widget _buildTasksTab(
     DataService dataService,
     List<Event> events,
@@ -797,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Event Filter Chips
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -834,7 +834,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
         const SizedBox(height: 16),
 
-        // Progress Card
+
         Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -918,7 +918,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  // ==================== DIALOGS & SHEETS ====================
+
 
   void _showAddEventDialog(BuildContext context, DataService dataService) {
     final titleController = TextEditingController();
@@ -967,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Nama Event',
                         hintText: 'misal: Gowes Pagi Sudirman',
-                        
+
                         prefixIcon: Icon(Icons.event),
                       ),
                     ),
@@ -977,7 +977,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Lokasi / Titik Kumpul',
                         hintText: 'misal: Gate 1 GBK Senayan',
-                        
+
                         prefixIcon: Icon(Icons.location_on),
                       ),
                     ),
@@ -1026,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Deskripsi Singkat',
                         hintText: 'Perlengkapan yang harus dibawa, rute, dll.',
-                        
+
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1138,7 +1138,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Judul Pengumuman',
                         hintText: 'misal: Iuran Kas Bulan Ini',
-                        
+
                         prefixIcon: Icon(Icons.title),
                       ),
                     ),
@@ -1147,7 +1147,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       initialValue: category,
                       decoration: const InputDecoration(
                         labelText: 'Kategori',
-                        
+
                         prefixIcon: Icon(Icons.category),
                       ),
                       items: ['Penting', 'Keuangan', 'Aturan', 'Umum'].map((cat) {
@@ -1164,7 +1164,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Isi Pengumuman',
                         hintText: 'Tuliskan informasi penting selengkapnya di sini...',
-                        
+
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -1303,7 +1303,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       initialValue: targetEventId,
                       decoration: const InputDecoration(
                         labelText: 'Event Terkait',
-                        
+
                         prefixIcon: Icon(Icons.event_note),
                       ),
                       items: events.map((e) {
@@ -1325,7 +1325,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Nama Tugas',
                         hintText: 'misal: Bawa P3K & Konsumsi',
-                        
+
                         prefixIcon: Icon(Icons.task_alt),
                       ),
                     ),
@@ -1336,7 +1336,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       decoration: const InputDecoration(
                         labelText: 'Catatan / Deskripsi',
                         hintText: 'Detail kebutuhan tugas...',
-                        
+
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -1689,7 +1689,7 @@ class _EventEmptyPainter extends CustomPainter {
     final h = size.height;
     const primary = Color(0xFF16A34A);
 
-    // Calendar body
+
     final bodyRect = RRect.fromRectAndRadius(
       Rect.fromLTWH(w * 0.12, h * 0.14, w * 0.76, h * 0.72),
       const Radius.circular(16),
@@ -1706,7 +1706,7 @@ class _EventEmptyPainter extends CustomPainter {
         ..strokeWidth = 2,
     );
 
-    // Top color bar
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(w * 0.12, h * 0.14, w * 0.76, h * 0.18),
@@ -1715,7 +1715,7 @@ class _EventEmptyPainter extends CustomPainter {
       Paint()..color = primary.withValues(alpha: 0.14),
     );
 
-    // Binding rings
+
     final ringPaint = Paint()
       ..color = primary.withValues(alpha: 0.7)
       ..strokeWidth = 2.5;
@@ -1730,7 +1730,7 @@ class _EventEmptyPainter extends CustomPainter {
       );
     }
 
-    // Checkmark inside
+
     final checkPaint = Paint()
       ..color = primary
       ..strokeWidth = 4
@@ -1742,7 +1742,7 @@ class _EventEmptyPainter extends CustomPainter {
       ..lineTo(w * 0.66, h * 0.4);
     canvas.drawPath(path, checkPaint);
 
-    // Small sparkle
+
     final dotPaint = Paint()..color = primary.withValues(alpha: 0.4);
     canvas.drawCircle(Offset(w * 0.82, h * 0.28), 3, dotPaint);
     canvas.drawCircle(Offset(w * 0.2, h * 0.85), 2.5, dotPaint);
@@ -1759,7 +1759,7 @@ class _TaskEmptyPainter extends CustomPainter {
     final h = size.height;
     const primary = Color(0xFF16A34A);
 
-    // Clipboard
+
     final bodyRect = RRect.fromRectAndRadius(
       Rect.fromLTWH(w * 0.18, h * 0.1, w * 0.64, h * 0.8),
       const Radius.circular(14),
@@ -1773,7 +1773,7 @@ class _TaskEmptyPainter extends CustomPainter {
         ..strokeWidth = 2,
     );
 
-    // Clipboard clip
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(w * 0.4, h * 0.02, w * 0.2, h * 0.14),
@@ -1782,7 +1782,7 @@ class _TaskEmptyPainter extends CustomPainter {
       Paint()..color = primary.withValues(alpha: 0.5),
     );
 
-    // Task lines
+
     final linePaint = Paint()
       ..color = primary.withValues(alpha: 0.35)
       ..strokeWidth = 3
@@ -1796,7 +1796,7 @@ class _TaskEmptyPainter extends CustomPainter {
         ),
         linePaint,
       );
-      // Checkbox
+
       canvas.drawCircle(
         Offset(w * 0.48, y + 3),
         7,
@@ -1807,7 +1807,7 @@ class _TaskEmptyPainter extends CustomPainter {
       );
     }
 
-    // Completed check
+
     final checkPaint = Paint()
       ..color = primary
       ..strokeWidth = 3.5
@@ -1833,7 +1833,7 @@ class _SearchEmptyPainter extends CustomPainter {
     final h = size.height;
     final Color primary = const Color(0xFF16A34A).withValues(alpha: 0.6);
 
-    // Magnifier glass
+
     canvas.drawCircle(
       Offset(w * 0.45, h * 0.42),
       h * 0.32,
@@ -1858,7 +1858,7 @@ class _SearchEmptyPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round,
     );
 
-    // Question mark dot inside
+
     canvas.drawCircle(
       Offset(w * 0.45, h * 0.35),
       4,

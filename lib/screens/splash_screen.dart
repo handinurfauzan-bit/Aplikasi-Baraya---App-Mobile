@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../widgets/gradient_background.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,54 +12,54 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fadeLogo;
-  late Animation<double> _fadeTagline;
-  late Animation<double> _scaleLogo;
-  late Animation<Offset> _slideUp;
+  late Animation<double> _drop;
+  late Animation<double> _titleIn;
+  late Animation<double> _settle;
+
+  static const _splashBackground = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0xFFF4FAF6),
+      Colors.white,
+      Colors.white,
+    ],
+    stops: [0.0, 0.4, 1.0],
+  );
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    _scaleLogo = Tween<double>(begin: 0.6, end: 1.0).animate(
+    _drop = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOutBack),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOutCubic),
       ),
     );
 
-    _fadeLogo = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _titleIn = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+        curve: const Interval(0.5, 0.72, curve: Curves.easeOutCubic),
       ),
     );
 
-    _fadeTagline = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _settle = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.3, 0.7, curve: Curves.easeIn),
-      ),
-    );
-
-    _slideUp = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
+        curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
       ),
     );
 
     _controller.forward();
 
-    Timer(const Duration(milliseconds: 2800), () {
+    Timer(const Duration(milliseconds: 2600), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -91,90 +90,98 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: appAuthGradient),
-        child: SafeArea(
-            child: SlideTransition(
-              position: _slideUp,
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Logo first
-                      ScaleTransition(
-                        scale: _scaleLogo,
-                        child: FadeTransition(
-                          opacity: _fadeLogo,
-                          child: Container(
-                            width: 96,
-                            height: 96,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF16A34A),
-                              borderRadius: BorderRadius.circular(26),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF16A34A).withValues(alpha: 0.35),
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 10),
+        decoration: const BoxDecoration(gradient: _splashBackground),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final drop = _drop.value;
+            final title = _titleIn.value;
+            final settle = _settle.value;
+
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Transform.scale(
+                    scale: 0.95 + 0.05 * drop + 0.03 * settle,
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - drop) * -380),
+                      child: FadeTransition(
+                        opacity: _drop,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Transform.scale(
+                              scale: 1 + 0.15 * settle,
+                              child: Container(
+                                width: 190,
+                                height: 190,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(0xFF16A34A)
+                                      .withValues(alpha: 0.08 * settle),
                                 ),
-                              ],
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.groups_rounded,
-                              size: 52,
-                              color: Colors.white,
+                            Container(
+                              width: 96,
+                              height: 96,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF16A34A),
+                                borderRadius: BorderRadius.circular(26),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x29000000),
+                                    blurRadius: 28,
+                                    offset: Offset(0, 12),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.groups_rounded,
+                                size: 52,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 22),
-                      // Then the app name
-                      FadeTransition(
-                        opacity: _fadeLogo,
-                        child: const Text(
-                          'Baraya',
-                          style: TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F3D24),
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FadeTransition(
-                        opacity: _fadeTagline,
-                        child: const Text(
-                          'Satu tempat buat semua urusan\nkomunitasmu.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF14532D),
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 48),
-                      FadeTransition(
-                        opacity: _fadeTagline,
-                        child: const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Color(0xFF16A34A),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 26),
+                  Transform.translate(
+                    offset: Offset(0, (1 - title) * 26),
+                    child: Opacity(
+                      opacity: title.clamp(0.0, 1.0),
+                      child: const Text(
+                        'Baraya',
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0F3D24),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  Opacity(
+                    opacity: title.clamp(0.0, 1.0),
+                    child: const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Color(0xFF16A34A),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
+            );
+          },
         ),
+      ),
     );
   }
 }

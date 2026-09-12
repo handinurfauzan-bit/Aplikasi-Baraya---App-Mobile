@@ -230,7 +230,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 
-  // ==================== HEADER ====================
+
 
   Widget _buildHeaderCard(Event event, ColorScheme colorScheme) {
     final dayName = DateFormat('EEEE', 'id_ID').format(event.dateTime);
@@ -447,7 +447,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 
-  // ==================== ATTENDEES ====================
+
 
   Widget _buildAttendees(
     List<User> allUsers,
@@ -593,7 +593,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 
-  // ==================== ACTIONS ====================
+
 
   Future<void> _setRsvp(DataService dataService, Event event, String status) async {
     dataService.setRSVP(event.id, status);
@@ -1009,7 +1009,7 @@ class _NotFoundPainter extends CustomPainter {
     final h = size.height;
     const primary = Color(0xFF16A34A);
 
-    // Calendar
+
     final bodyRect = RRect.fromRectAndRadius(
       Rect.fromLTWH(w * 0.18, h * 0.12, w * 0.64, h * 0.7),
       const Radius.circular(14),
@@ -1022,7 +1022,7 @@ class _NotFoundPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
-    // Bindings
+
     final ringPaint = Paint()
       ..color = primary.withValues(alpha: 0.7)
       ..strokeWidth = 2.5;
@@ -1036,7 +1036,7 @@ class _NotFoundPainter extends CustomPainter {
         ringPaint,
       );
     }
-    // Question mark
+
     final qPaint = Paint()
       ..color = primary
       ..strokeWidth = 3

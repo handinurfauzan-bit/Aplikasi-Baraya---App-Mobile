@@ -58,9 +58,9 @@ class FacebookLogo extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Tiny SVG path parser (subset: M/m L/l H/h V/v C/c S/s Q/q Z/z).
-// ---------------------------------------------------------------------------
+
+
+
 ui.Path _parseSvgPath(String data) {
   final path = ui.Path();
   var i = 0;
@@ -96,7 +96,7 @@ ui.Path _parseSvgPath(String data) {
     return double.parse(data.substring(start, i));
   }
 
-  bool isCommand(String c) => RegExp(r'[A-Za-z]').hasMatch(c);
+  bool isCommand(String c) => RegExp('[A-Za-z]').hasMatch(c);
 
   while (i < data.length) {
     if (isCommand(data[i])) {
@@ -248,9 +248,9 @@ void _drawCentered(Canvas canvas, ui.Path source, Size size, Paint paint,
   canvas.restore();
 }
 
-// ---------------------------------------------------------------------------
-// Google "G" mark (official 4-color paths, viewBox 0 0 24 24).
-// ---------------------------------------------------------------------------
+
+
+
 class _GoogleGPainter extends CustomPainter {
   const _GoogleGPainter();
 
@@ -295,9 +295,9 @@ class _GoogleGPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ---------------------------------------------------------------------------
-// Facebook "f" glyph (official white f on brand blue tile).
-// ---------------------------------------------------------------------------
+
+
+
 class _FacebookFPainter extends CustomPainter {
   const _FacebookFPainter();
 
@@ -322,9 +322,9 @@ class _FacebookFPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ---------------------------------------------------------------------------
-// Apple logo (Simple Icons vector path, viewBox 0 0 24 24).
-// ---------------------------------------------------------------------------
+
+
+
 class _ApplePainter extends CustomPainter {
   final Color color;
 

@@ -38,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // HERO PROFILE CARD
+
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
 
-          // TUGAS SAYA
+
           Row(
             children: [
               Icon(Icons.checklist, size: 18, color: colorScheme.primary),
@@ -228,7 +228,7 @@ class ProfileScreen extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // KOMUNITAS SAYA
+
           Row(
             children: [
               Icon(Icons.groups, size: 18, color: colorScheme.primary),
@@ -420,7 +420,7 @@ class _ProfileTaskEmptyPainter extends CustomPainter {
     final h = size.height;
     const primary = Color(0xFF16A34A);
 
-    // Clipboard body
+
     final bodyRect = RRect.fromRectAndRadius(
       Rect.fromLTWH(w * 0.18, h * 0.1, w * 0.64, h * 0.8),
       const Radius.circular(12),
@@ -433,7 +433,7 @@ class _ProfileTaskEmptyPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
-    // Clip
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(w * 0.4, h * 0.02, w * 0.2, h * 0.14),
@@ -441,7 +441,7 @@ class _ProfileTaskEmptyPainter extends CustomPainter {
       ),
       Paint()..color = primary.withValues(alpha: 0.5),
     );
-    // Lines
+
     final linePaint = Paint()
       ..color = primary.withValues(alpha: 0.35)
       ..strokeWidth = 3

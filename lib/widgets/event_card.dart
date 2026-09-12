@@ -54,11 +54,11 @@ class EventCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Row: Date Badge + Title/Time + Reminder button
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Date box
+
                   Container(
                     width: 58,
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -107,7 +107,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
 
-                  // Title & Details
+
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +182,7 @@ class EventCard extends StatelessWidget {
                     ),
                   ),
 
-                  // H-1 Reminder action
+
                   IconButton(
                     icon: Icon(
                       event.reminderSet
@@ -216,7 +216,7 @@ class EventCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Countdown chip
+
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
@@ -251,11 +251,11 @@ class EventCard extends StatelessWidget {
               const Divider(height: 1),
               const SizedBox(height: 10),
 
-              // RSVP Bar & Participant Summary
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Attendees count
+
                   Row(
                     children: [
                       Icon(Icons.people_alt_outlined, size: 16, color: colorScheme.primary),
@@ -278,7 +278,7 @@ class EventCard extends StatelessWidget {
                     ],
                   ),
 
-                  // RSVP action buttons
+
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

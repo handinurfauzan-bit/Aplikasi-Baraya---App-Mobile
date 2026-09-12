@@ -48,7 +48,7 @@ class TaskCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Checkbox button
+
               InkWell(
                 onTap: onToggle,
                 borderRadius: BorderRadius.circular(20),
@@ -70,7 +70,7 @@ class TaskCard extends StatelessWidget {
                 ),
               ),
 
-              // Title, Description & Assignees
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class TaskCard extends StatelessWidget {
                 ),
               ),
 
-              // Delete button if available
+
               if (onDelete != null)
                 IconButton(
                   icon: Icon(Icons.delete_outline, size: 18, color: colorScheme.outline),

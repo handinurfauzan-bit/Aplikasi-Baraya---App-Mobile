@@ -70,9 +70,9 @@ class NotificationService {
     try {
       await init();
 
-      // H-1 (24 hours before)
+
       var scheduledTime = eventDateTime.subtract(const Duration(hours: 24));
-      // If event is in less than 24 hours, schedule for 1 minute from now for demo
+
       if (scheduledTime.isBefore(DateTime.now())) {
         scheduledTime = DateTime.now().add(const Duration(seconds: 10));
       }

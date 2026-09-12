@@ -90,7 +90,7 @@ class DataService extends ChangeNotifier {
   }
 
   void _loadInitialData() {
-    // 1. Members
+
     final usersList = [
       const User(
         id: 'user_001',
@@ -128,7 +128,7 @@ class DataService extends ChangeNotifier {
       _users[u.id] = u;
     }
 
-    // 2. Community
+
     const commId = 'kumpul_001';
     _communities[commId] = Community(
       id: commId,
@@ -139,7 +139,7 @@ class DataService extends ChangeNotifier {
       members: usersList,
     );
 
-    // 3. Events
+
     final now = DateTime.now();
     final event1 = Event(
       id: 'event_001',
@@ -197,7 +197,7 @@ class DataService extends ChangeNotifier {
     _events[event2.id] = event2;
     _events[event3.id] = event3;
 
-    // 4. Tasks
+
     final tasksList = [
       Task(
         id: 'task_001',
@@ -253,7 +253,7 @@ class DataService extends ChangeNotifier {
       _tasks[t.id] = t;
     }
 
-    // 5. Announcements
+
     final ann1 = Announcement(
       id: 'ann_001',
       communityId: commId,
@@ -297,7 +297,7 @@ class DataService extends ChangeNotifier {
     _announcements[ann2.id] = ann2;
     _announcements[ann3.id] = ann3;
 
-    // 6. Additional communities for the demo switcher
+
     _seedPhotographyCommunity(now);
     _seedHikingCommunity(now);
   }
@@ -542,7 +542,7 @@ class DataService extends ChangeNotifier {
     );
   }
 
-  // Getters
+
   User get currentUser =>
       _users[currentUserId] ??
       const User(id: 'user_001', name: 'Dimas Aditya', role: 'Anggota Aktif');
@@ -573,7 +573,7 @@ class DataService extends ChangeNotifier {
     final list = _announcements.values
         .where((a) => a.communityId == communityId)
         .toList();
-    // Pinned first, then sorted by createdAt descending
+
     list.sort((a, b) {
       if (a.pinned != b.pinned) {
         return a.pinned ? -1 : 1;
@@ -585,7 +585,7 @@ class DataService extends ChangeNotifier {
 
   List<Task> getTasksForEvent(String eventId) {
     final list = _tasks.values.where((t) => t.eventId == eventId).toList();
-    // Incompleted tasks first, then by createdAt
+
     list.sort((a, b) {
       if (a.isCompleted != b.isCompleted) {
         return a.isCompleted ? 1 : -1;
@@ -632,7 +632,7 @@ class DataService extends ChangeNotifier {
     return result;
   }
 
-  // Actions
+
   void setRSVP(String eventId, String status) {
     final event = _events[eventId];
     if (event == null) return;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Strong green -> white gradient used for full-screen auth & splash backgrounds.
+
 const appAuthGradient = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
@@ -14,7 +14,7 @@ const appAuthGradient = LinearGradient(
   stops: [0.0, 0.10, 0.35, 0.55, 1.0],
 );
 
-/// Soft green -> white gradient applied behind every screen.
+
 class GradientBackground extends StatelessWidget {
   final Widget child;
 
@@ -43,9 +43,9 @@ class GradientBackground extends StatelessWidget {
   }
 }
 
-/// Full-screen auth/splash background: a small green band at the top that
-/// eases into white, with a soft blur glow in the middle so the green -> white
-/// transition does not look like a hard seam.
+
+
+
 class AuthGradientBackground extends StatelessWidget {
   final Widget child;
 

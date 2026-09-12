@@ -72,171 +72,193 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       return;
     }
     _controller.nextPage(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 550),
+      curve: Curves.easeOutCubic,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-return Scaffold(
+    return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(gradient: appAuthGradient),
         child: SafeArea(
           child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 16, 0),
-                  child: Row(
-                    children: [
-                      const Spacer(),
-                      TextButton(
-                        onPressed: _goToLogin,
-                        child: const Text(
-                          'Lewati',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF15803D),
-                          ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 16, 0),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    TextButton(
+                      onPressed: _goToLogin,
+                      child: const Text(
+                        'Lewati',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF15803D),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _controller,
-                    itemCount: _pages.length,
-                    onPageChanged: (index) =>
-                        setState(() => _current = index),
-                    itemBuilder: (context, index) {
-                      final page = _pages[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 210,
-                              height: 210,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(0xFFEAF7EF),
-                                border: Border.all(
-                                  color: const Color(0xFF16A34A)
-                                      .withValues(alpha: 0.20),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    page.icon,
-                                    size: 96,
-                                    color: const Color(0xFF16A34A),
+              ),
+              Expanded(
+                child: PageView.builder(
+                  controller: _controller,
+                  itemCount: _pages.length,
+                  onPageChanged: (index) => setState(() => _current = index),
+                  itemBuilder: (context, index) {
+                    final page = _pages[index];
+                    return AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, _) {
+                        Widget content = Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 28),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 210,
+                                height: 210,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(0xFFEAF7EF),
+                                  border: Border.all(
+                                    color: const Color(0xFF16A34A)
+                                        .withValues(alpha: 0.20),
+                                    width: 1.5,
                                   ),
-                                  Positioned(
-                                    right: 34,
-                                    top: 38,
-                                    child: Container(
-                                      width: 30,
-                                      height: 30,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Color(0xFF15803D),
-                                      ),
-                                      child: const Icon(
-                                        Icons.check_rounded,
-                                        size: 18,
-                                        color: Colors.white,
+                                ),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Icon(
+                                      page.icon,
+                                      size: 96,
+                                      color: const Color(0xFF16A34A),
+                                    ),
+                                    Positioned(
+                                      right: 34,
+                                      top: 38,
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF15803D),
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          size: 18,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 36),
-                            Text(
-                              page.title,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF0F3D24),
-                                height: 1.2,
+                              const SizedBox(height: 36),
+                              Text(
+                                page.title,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF0F3D24),
+                                  height: 1.2,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              page.description,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF5F6F65),
-                                height: 1.6,
+                              const SizedBox(height: 12),
+                              Text(
+                                page.description,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF5F6F65),
+                                  height: 1.6,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: List.generate(_pages.length, (i) {
-                          final active = i == _current;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            margin: const EdgeInsets.only(right: 8),
-                            width: active ? 26 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: active
-                                  ? const Color(0xFF16A34A)
-                                  : const Color(0xFF16A34A)
-                                      .withValues(alpha: 0.25),
-                              borderRadius: BorderRadius.circular(8),
+                            ],
+                          ),
+                        );
+                        if (_controller.hasClients) {
+                          final pagePos = _controller.position.pixels /
+                              _controller.position.viewportDimension;
+                          final diff = pagePos - index;
+                          content = Transform.translate(
+                            offset: Offset(-90 * diff, 0),
+                            child: Opacity(
+                              opacity: (1 - diff.abs()).clamp(0.0, 1.0),
+                              child: Transform.scale(
+                                scale: (1 - diff.abs() * 0.10).clamp(0.88, 1.0),
+                                child: content,
+                              ),
                             ),
                           );
-                        }),
+                        }
+                        return content;
+                      },
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_pages.length, (i) {
+                    final active = i == _current;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.only(right: 8),
+                      width: active ? 26 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: active
+                            ? const Color(0xFF16A34A)
+                            : const Color(0xFF16A34A).withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const Spacer(),
-                      SizedBox(
-                        height: 52,
-                        child: FilledButton.icon(
-                          onPressed: _next,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF16A34A),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 22),
+                    );
+                  }),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    SizedBox(
+                      height: 52,
+                      child: FilledButton(
+                        onPressed: _next,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF16A34A),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          icon: const Icon(Icons.arrow_forward_rounded, size: 20),
-                          label: Text(
-                            _current == _pages.length - 1 ? 'Mulai' : 'Lanjut',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          padding: const EdgeInsets.symmetric(horizontal: 22),
+                        ),
+                        child: Text(
+                          _current == _pages.length - 1 ? 'Mulai' : 'Lanjut',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+        ),
       ),
     );
   }

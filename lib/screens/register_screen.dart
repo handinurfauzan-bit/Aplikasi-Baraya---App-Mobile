@@ -52,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _snack('Masukkan email yang valid');
       return;
     }
-    if (phone.isNotEmpty && phone.replaceAll(RegExp(r'[^0-9]'), '').length < 9) {
+    if (phone.isNotEmpty && phone.replaceAll(RegExp('[^0-9]'), '').length < 9) {
       _snack('Nomor HP tidak valid');
       return;
     }
@@ -103,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ---- Header ----
+
                   Row(
                     children: [
                       Container(
