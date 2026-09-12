@@ -31,13 +31,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Kelola & Ikuti Event',
       description:
           'Buat event komunitas, konfirmasi kehadiran, dan ketahui siapa saja '
-          'yang ikut - semua dalam satu tempat.',
+          'yang ikut semua dalam satu tempat.',
     ),
     _OnboardingPage(
       icon: Icons.campaign_rounded,
       title: 'Info & Pengumuman',
       description:
-          'Tetap ter-update dengan pengumuman penting dan informasi terbaru '
+          'Tetap terupdate dengan pengumuman penting dan informasi terbaru '
           'untuk seluruh anggota komunitasmu.',
     ),
     _OnboardingPage(

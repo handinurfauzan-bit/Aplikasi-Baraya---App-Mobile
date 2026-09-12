@@ -16,7 +16,6 @@ Future<void> _pumpApp(WidgetTester tester) async {
     KumpulApp(dataService: dataService, settings: settings),
   );
 
-
   await tester.pump(const Duration(seconds: 3));
   await tester.pumpAndSettle();
 
@@ -36,11 +35,11 @@ void main() {
     await initializeDateFormatting('id_ID');
   });
 
-  testWidgets('Baraya loads and displays community header and tabs', (WidgetTester tester) async {
+  testWidgets('Baraya loads and displays community header and tabs',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
 
-
-    expect(find.text('Komunitas Gowes Batavia'), findsOneWidget);
+    expect(find.text('Baraya'), findsOneWidget);
 
     expect(find.text('Event'), findsOneWidget);
     expect(find.text('Pengumuman'), findsOneWidget);
@@ -51,21 +50,18 @@ void main() {
     expect(find.text('Ikut'), findsWidgets);
   });
 
-  testWidgets('Switching tabs displays Announcements and Tasks', (WidgetTester tester) async {
+  testWidgets('Switching tabs displays Announcements and Tasks',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
-
 
     await tester.tap(find.text('Pengumuman'));
     await tester.pumpAndSettle();
 
-
     expect(find.textContaining('Info Pengalihan Rute CFD'), findsOneWidget);
     expect(find.text('PINNED'), findsWidgets);
 
-
     await tester.tap(find.text('Tugas'));
     await tester.pumpAndSettle();
-
 
     expect(find.text('Progress Tugas Panitia'), findsOneWidget);
     await tester.drag(find.byType(ListView).first, const Offset(0, -400));
@@ -73,18 +69,17 @@ void main() {
     expect(find.text('Siapkan Pisang & Air Mineral'), findsOneWidget);
   });
 
-  testWidgets('Event detail screen opens when tapping an event card', (WidgetTester tester) async {
+  testWidgets('Event detail screen opens when tapping an event card',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
 
     await tester.tap(find.text('Gowes Minggu Pagi ke Monas').first);
     await tester.pumpAndSettle();
 
-
     expect(find.text('Detail Event'), findsOneWidget);
     expect(find.text('Deskripsi'), findsOneWidget);
     expect(find.text('Status Saya'), findsOneWidget);
     expect(find.textContaining('Peserta'), findsOneWidget);
-
 
     await tester.scrollUntilVisible(
       find.textContaining('Tugas Panitia'),
@@ -93,45 +88,44 @@ void main() {
     );
     expect(find.textContaining('Tugas Panitia'), findsOneWidget);
   });
-
-  testWidgets('Community switcher changes displayed data', (WidgetTester tester) async {
+  testWidgets('Communities screen lists communities and opens its members',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
 
-
-    await tester.tap(find.byIcon(Icons.swap_horiz));
+    await tester.tap(find.byIcon(Icons.diversity_3));
     await tester.pumpAndSettle();
-    expect(find.text('Pilih Komunitas'), findsOneWidget);
-
+    expect(find.text('Komunitas'), findsOneWidget);
+    expect(find.text('Komunitas Foto Jakarta'), findsOneWidget);
+    expect(find.text('Tambah Komunitas'), findsOneWidget);
 
     await tester.tap(find.text('Komunitas Foto Jakarta'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Komunitas Foto Jakarta'), findsOneWidget);
-    expect(find.text('Event'), findsOneWidget);
-    expect(find.text('Hunting Sunrise Pantai Indah'), findsWidgets);
+    expect(find.text('Anggota Komunitas'), findsOneWidget);
+    expect(find.text('Nina Kusuma'), findsOneWidget);
   });
-
-  testWidgets('Theme toggle switches to dark mode', (WidgetTester tester) async {
+  testWidgets('Theme toggle switches to dark mode',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
-
 
     expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.dark_mode_outlined));
     await tester.pumpAndSettle();
 
-
     expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
-
 
     final context = tester.element(find.byType(Scaffold).first);
     expect(Theme.of(context).brightness, Brightness.dark);
   });
-
-  testWidgets('Members screen shows members and their stats', (WidgetTester tester) async {
+  testWidgets('Members screen opens via community list and shows member stats',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
 
-    await tester.tap(find.byIcon(Icons.people_outline));
+    await tester.tap(find.byIcon(Icons.diversity_3));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Komunitas Gowes Batavia'));
     await tester.pumpAndSettle();
 
     expect(find.text('Anggota Komunitas'), findsOneWidget);
@@ -139,10 +133,43 @@ void main() {
     expect(find.text('Anda'), findsOneWidget);
     expect(find.text('Budi Santoso'), findsOneWidget);
 
-
     await tester.tap(find.text('Budi Santoso'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Status Event Mereka'), findsOneWidget);
+  });
+
+  testWidgets('About screen shows app settings and development info',
+      (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.tap(find.byIcon(Icons.rule_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pengaturan & Tentang'), findsOneWidget);
+    expect(find.text('Mode Gelap'), findsOneWidget);
+    expect(find.text('Mode Demo'), findsOneWidget);
+    expect(find.text('Info Pengembangan'), findsOneWidget);
+    expect(find.text('Baraya'), findsOneWidget);
+    expect(find.text('v1.0.0'), findsOneWidget);
+  });
+
+  testWidgets('User can add a new community', (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await tester.tap(find.byIcon(Icons.diversity_3));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Tambah Komunitas'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Nama Komunitas'),
+      'Komunitas Lari Pagi',
+    );
+    await tester.tap(find.text('Buat Komunitas'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Komunitas Lari Pagi'), findsWidgets);
   });
 
   test('DataService persists and restores data across instances', () async {
@@ -162,7 +189,6 @@ void main() {
       reminderSet: true,
     ));
 
-
     final prefs = await SharedPreferences.getInstance();
     for (var i = 0; i < 20; i++) {
       if ((prefs.getString('kumpul_in_data_v1') ?? '').contains('event_9')) {
@@ -178,8 +204,12 @@ void main() {
     expect(restoredEvent, isNotNull);
     expect(restoredEvent!.title, 'Event Test Persistence');
     expect(restored.getEvent('event_001')!.rsvps['user_001'], 'maybe');
-    expect(restored.getAnnouncementsForCommunity('kumpul_001')
-        .firstWhere((a) => a.id == 'ann_003').pinned, isTrue);
+    expect(
+        restored
+            .getAnnouncementsForCommunity('kumpul_001')
+            .firstWhere((a) => a.id == 'ann_003')
+            .pinned,
+        isTrue);
   });
 
   test('DataService reset restores seed data', () async {
@@ -211,12 +241,16 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Monas');
     await tester.pumpAndSettle();
 
+    await tester.drag(find.byType(ListView).first, const Offset(0, -400));
+    await tester.pumpAndSettle();
+
     expect(find.text('1 event ditemukan'), findsOneWidget);
     expect(find.text('Gowes Minggu Pagi ke Monas'), findsWidgets);
     expect(find.text('Kopdar & Workshop Servis Mandiri'), findsNothing);
   });
 
-  testWidgets('Profile screen opens from app bar avatar', (WidgetTester tester) async {
+  testWidgets('Profile screen opens from app bar avatar',
+      (WidgetTester tester) async {
     await _pumpApp(tester);
 
     await tester.tap(find.text('Profil'));
@@ -251,7 +285,8 @@ void main() {
 
     expect(find.text('Edit Pengumuman'), findsOneWidget);
     await tester.enterText(
-      find.widgetWithText(TextField, 'Jersey Resmi Batavia 2026 Sudah Siap Dipesan'),
+      find.widgetWithText(
+          TextField, 'Jersey Resmi Batavia 2026 Sudah Siap Dipesan'),
       'Jersey Edisi Demo 2026',
     );
     await tester.tap(find.text('Simpan Perubahan'));
@@ -270,7 +305,8 @@ void main() {
       120,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.textContaining('Aturan & Etika Gowes Bareng'));
+    await tester
+        .ensureVisible(find.textContaining('Aturan & Etika Gowes Bareng'));
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Aturan & Etika Gowes Bareng'));
     await tester.pumpAndSettle();
@@ -279,6 +315,7 @@ void main() {
     await tester.tap(find.text('Hapus'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Aturan & Etika Gowes Bareng (Wajib Dibaca)'), findsNothing);
+    expect(
+        find.text('Aturan & Etika Gowes Bareng (Wajib Dibaca)'), findsNothing);
   });
 }

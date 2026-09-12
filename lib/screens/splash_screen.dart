@@ -66,7 +66,8 @@ class _SplashScreenState extends State<SplashScreen>
             transitionDuration: const Duration(milliseconds: 500),
             pageBuilder: (context, animation, secondaryAnimation) =>
                 const OnboardingScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -123,24 +124,12 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ),
                             ),
-                            Container(
-                              width: 96,
-                              height: 96,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF16A34A),
-                                borderRadius: BorderRadius.circular(26),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x29000000),
-                                    blurRadius: 28,
-                                    offset: Offset(0, 12),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.groups_rounded,
-                                size: 52,
-                                color: Colors.white,
+                            SizedBox(
+                              width: 140,
+                              height: 140,
+                              child: Image.asset(
+                                'assets/logo1.1.png',
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ],
@@ -148,18 +137,17 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 20),
                   Transform.translate(
                     offset: Offset(0, (1 - title) * 26),
                     child: Opacity(
                       opacity: title.clamp(0.0, 1.0),
-                      child: const Text(
-                        'Baraya',
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF0F3D24),
-                          letterSpacing: -0.5,
+                      child: SizedBox(
+                        width: 210,
+                        height: 78,
+                        child: Image.asset(
+                          'assets/Baraya.1.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),

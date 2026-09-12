@@ -90,7 +90,6 @@ class DataService extends ChangeNotifier {
   }
 
   void _loadInitialData() {
-
     final usersList = [
       const User(
         id: 'user_001',
@@ -128,7 +127,6 @@ class DataService extends ChangeNotifier {
       _users[u.id] = u;
     }
 
-
     const commId = 'kumpul_001';
     _communities[commId] = Community(
       id: commId,
@@ -138,7 +136,6 @@ class DataService extends ChangeNotifier {
       category: 'Gowes & Olahraga',
       members: usersList,
     );
-
 
     final now = DateTime.now();
     final event1 = Event(
@@ -197,13 +194,13 @@ class DataService extends ChangeNotifier {
     _events[event2.id] = event2;
     _events[event3.id] = event3;
 
-
     final tasksList = [
       Task(
         id: 'task_001',
         eventId: 'event_001',
         title: 'Bawa Toolkit & Pompa Portable',
-        description: 'Bawa pompa lantai portabel & kunci L di titik kumpul GBK.',
+        description:
+            'Bawa pompa lantai portabel & kunci L di titik kumpul GBK.',
         assigneeIds: ['user_004'],
         isCompleted: true,
       ),
@@ -211,7 +208,8 @@ class DataService extends ChangeNotifier {
         id: 'task_002',
         eventId: 'event_001',
         title: 'Siapkan Pisang & Air Mineral',
-        description: 'Beli 2 kardus air mineral 330ml dan 2 sisir pisang cavendish.',
+        description:
+            'Beli 2 kardus air mineral 330ml dan 2 sisir pisang cavendish.',
         assigneeIds: ['user_005', 'user_001'],
         isCompleted: false,
       ),
@@ -227,7 +225,8 @@ class DataService extends ChangeNotifier {
         id: 'task_004',
         eventId: 'event_001',
         title: 'Dokumentasi Foto & Video Reels',
-        description: 'Ambil konten di Bundaran HI & Monas untuk feed Instagram komunitas.',
+        description:
+            'Ambil konten di Bundaran HI & Monas untuk feed Instagram komunitas.',
         assigneeIds: ['user_001'],
         isCompleted: false,
       ),
@@ -235,7 +234,8 @@ class DataService extends ChangeNotifier {
         id: 'task_005',
         eventId: 'event_002',
         title: 'Booking Area Outdoor Cafe',
-        description: 'Konfirmasi kapasitas 20 orang dan area parkir sepeda aman.',
+        description:
+            'Konfirmasi kapasitas 20 orang dan area parkir sepeda aman.',
         assigneeIds: ['user_003'],
         isCompleted: true,
       ),
@@ -252,7 +252,6 @@ class DataService extends ChangeNotifier {
     for (final t in tasksList) {
       _tasks[t.id] = t;
     }
-
 
     final ann1 = Announcement(
       id: 'ann_001',
@@ -296,7 +295,6 @@ class DataService extends ChangeNotifier {
     _announcements[ann1.id] = ann1;
     _announcements[ann2.id] = ann2;
     _announcements[ann3.id] = ann3;
-
 
     _seedPhotographyCommunity(now);
     _seedHikingCommunity(now);
@@ -503,7 +501,8 @@ class DataService extends ChangeNotifier {
       id: 'task_201',
       eventId: 'event_201',
       title: 'Cek Perlengkapan Tenda & Flysheet',
-      description: 'Pastikan 3 tenda dan flysheet kering, patch kebocoran bila ada.',
+      description:
+          'Pastikan 3 tenda dan flysheet kering, patch kebocoran bila ada.',
       assigneeIds: ['user_203', 'user_201'],
       isCompleted: false,
     );
@@ -542,7 +541,6 @@ class DataService extends ChangeNotifier {
     );
   }
 
-
   User get currentUser =>
       _users[currentUserId] ??
       const User(id: 'user_001', name: 'Dimas Aditya', role: 'Anggota Aktif');
@@ -557,12 +555,35 @@ class DataService extends ChangeNotifier {
   List<Community> getAllCommunities() =>
       _communities.values.toList()..sort((a, b) => a.name.compareTo(b.name));
 
+  void addCommunity(Community community) {
+    _communities[community.id] = community;
+    notifyListeners();
+    _persist();
+  }
+
+  void addUserToCommunity(String communityId, User user) {
+    final community = _communities[communityId];
+    if (community == null) return;
+    if (community.members.any((m) => m.id == user.id)) return;
+    _users[user.id] = user;
+    _communities[communityId] = Community(
+      id: community.id,
+      name: community.name,
+      description: community.description,
+      category: community.category,
+      members: [...community.members, user],
+    );
+    notifyListeners();
+    _persist();
+  }
+
   Event? getEventById(String eventId) => _events[eventId];
 
   Community? getCommunity(String id) => _communities[id];
 
   List<Event> getEventsForCommunity(String communityId) {
-    final list = _events.values.where((e) => e.communityId == communityId).toList();
+    final list =
+        _events.values.where((e) => e.communityId == communityId).toList();
     list.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     return list;
   }
@@ -596,21 +617,10 @@ class DataService extends ChangeNotifier {
   }
 
   List<Task> getAllTasksForCommunity(String communityId) {
-    final communityEventIds = getEventsForCommunity(communityId).map((e) => e.id).toSet();
-    final list = _tasks.values.where((t) => communityEventIds.contains(t.eventId)).toList();
-    list.sort((a, b) {
-      if (a.isCompleted != b.isCompleted) {
-        return a.isCompleted ? 1 : -1;
-      }
-      return b.createdAt.compareTo(a.createdAt);
-    });
-    return list;
-  }
-
-  List<Task> getTasksForUser(String communityId, String userId) {
-    final communityEventIds = getEventsForCommunity(communityId).map((e) => e.id).toSet();
+    final communityEventIds =
+        getEventsForCommunity(communityId).map((e) => e.id).toSet();
     final list = _tasks.values
-        .where((t) => communityEventIds.contains(t.eventId) && t.assigneeIds.contains(userId))
+        .where((t) => communityEventIds.contains(t.eventId))
         .toList();
     list.sort((a, b) {
       if (a.isCompleted != b.isCompleted) {
@@ -621,7 +631,25 @@ class DataService extends ChangeNotifier {
     return list;
   }
 
-  List<({Event event, String status})> getRSVPsForUser(String communityId, String userId) {
+  List<Task> getTasksForUser(String communityId, String userId) {
+    final communityEventIds =
+        getEventsForCommunity(communityId).map((e) => e.id).toSet();
+    final list = _tasks.values
+        .where((t) =>
+            communityEventIds.contains(t.eventId) &&
+            t.assigneeIds.contains(userId))
+        .toList();
+    list.sort((a, b) {
+      if (a.isCompleted != b.isCompleted) {
+        return a.isCompleted ? 1 : -1;
+      }
+      return b.createdAt.compareTo(a.createdAt);
+    });
+    return list;
+  }
+
+  List<({Event event, String status})> getRSVPsForUser(
+      String communityId, String userId) {
     final result = <({Event event, String status})>[];
     for (final event in getEventsForCommunity(communityId)) {
       final status = event.rsvps[userId];
@@ -631,7 +659,6 @@ class DataService extends ChangeNotifier {
     }
     return result;
   }
-
 
   void setRSVP(String eventId, String status) {
     final event = _events[eventId];

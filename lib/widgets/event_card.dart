@@ -29,16 +29,11 @@ class EventCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final myRsvp = event.rsvps[currentUserId];
 
-    final dayName = DateFormat('EEE').format(event.dateTime).toUpperCase();
-    final dayNum = DateFormat('dd').format(event.dateTime);
-    final monthName = DateFormat('MMM').format(event.dateTime).toUpperCase();
-    final timeStr = DateFormat('HH:mm').format(event.dateTime);
-
     return Card(
       elevation: isSelected ? 3 : 1,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         side: BorderSide(
           color: isSelected
               ? colorScheme.primary
@@ -49,276 +44,389 @@ class EventCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildBanner(colorScheme),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 6, 10),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  Container(
-                    width: 58,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.primaryContainer.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          dayName,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                            color: isSelected
-                                ? colorScheme.onPrimary
-                                : colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                        Text(
-                          dayNum,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: isSelected
-                                ? colorScheme.onPrimary
-                                : colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                        Text(
-                          monthName,
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? colorScheme.onPrimary.withValues(alpha: 0.8)
-                                : colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
                           event.title,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             height: 1.2,
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(Icons.schedule, size: 14, color: colorScheme.onSurfaceVariant),
-                            const SizedBox(width: 4),
-                            Text(
-                              '$timeStr WIB',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
-                              ),
+                      ),
+                      _buildReminderButton(colorScheme),
+                    ],
+                  ),
+                  if (event.location.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined,
+                            size: 15, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            event.location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                             ),
-                            if (taskCount > 0) ...[
-                              const SizedBox(width: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondaryContainer.withValues(alpha: 0.8),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.checklist, size: 12, color: colorScheme.onSecondaryContainer),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      '$taskCount tugas',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: colorScheme.onSecondaryContainer,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        if (event.location.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on_outlined,
-                                  size: 14, color: colorScheme.onSurfaceVariant),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  event.location,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                  ),
-
-
-                  IconButton(
-                    icon: Icon(
-                      event.reminderSet
-                          ? Icons.notifications_active
-                          : Icons.notifications_none_outlined,
-                      color: event.reminderSet
-                          ? Colors.amber.shade700
-                          : colorScheme.onSurfaceVariant,
-                      size: 22,
+                  ],
+                  if (event.description.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      event.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
                     ),
-                    tooltip: event.reminderSet
-                        ? 'Pengingat H-1 aktif'
-                        : 'Nyalakan pengingat H-1',
-                    onPressed: onToggleReminder,
+                  ],
+                  const SizedBox(height: 10),
+                  const Divider(height: 1),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.people_alt_outlined,
+                              size: 16, color: colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${event.joinedCount} Ikut',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                          if (event.maybeCount > 0) ...[
+                            Text(
+                              ' • ${event.maybeCount} Ragu',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildRsvpOption(
+                            label: 'Ikut',
+                            icon: Icons.check,
+                            isSelected: myRsvp == 'joined',
+                            selectedColor: Colors.green.shade700,
+                            selectedBg: Colors.green.shade50,
+                            colorScheme: colorScheme,
+                            onTap: () => onRSVP?.call('joined'),
+                          ),
+                          const SizedBox(width: 6),
+                          _buildRsvpOption(
+                            label: 'Ragu',
+                            icon: Icons.help_outline,
+                            isSelected: myRsvp == 'maybe',
+                            selectedColor: Colors.orange.shade800,
+                            selectedBg: Colors.orange.shade50,
+                            colorScheme: colorScheme,
+                            onTap: () => onRSVP?.call('maybe'),
+                          ),
+                          const SizedBox(width: 6),
+                          _buildRsvpOption(
+                            label: 'Gak',
+                            icon: Icons.close,
+                            isSelected: myRsvp == 'declined',
+                            selectedColor: Colors.red.shade700,
+                            selectedBg: Colors.red.shade50,
+                            colorScheme: colorScheme,
+                            onTap: () => onRSVP?.call('declined'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              if (event.description.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                Text(
-                  event.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    height: 1.35,
-                  ),
-                ),
-              ],
+  Widget _buildBanner(ColorScheme colorScheme) {
+    final dayName = DateFormat('EEE').format(event.dateTime).toUpperCase();
+    final dayNum = DateFormat('d').format(event.dateTime);
+    final monthName = DateFormat('MMM').format(event.dateTime).toUpperCase();
+    final timeStr = DateFormat('HH:mm').format(event.dateTime);
 
-              const SizedBox(height: 12),
-
-
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    return Container(
+      height: 168,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.primary,
+            colorScheme.primary.withValues(alpha: 0.78),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned(
+            right: -24,
+            top: -28,
+            child: _bannerCircle(120, 0.14),
+          ),
+          Positioned(
+            left: -20,
+            bottom: -36,
+            child: _bannerCircle(150, 0.1),
+          ),
+          Positioned(
+            right: 40,
+            bottom: -12,
+            child: _bannerCircle(60, 0.12),
+          ),
+          Icon(
+            _bannerIcon(),
+            size: 86,
+            color: Colors.white.withValues(alpha: 0.85),
+          ),
+          Positioned(
+            top: 12,
+            right: 12,
+            child: _buildBannerCountdown(colorScheme),
+          ),
+          if (taskCount > 0)
+            Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                 decoration: BoxDecoration(
-                  color: _countdownColor(colorScheme).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _countdownColor(colorScheme).withValues(alpha: 0.4),
-                  ),
+                  color: Colors.white.withValues(alpha: 0.22),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      _countdownIcon(),
-                      size: 14,
-                      color: _countdownColor(colorScheme),
-                    ),
-                    const SizedBox(width: 5),
+                    const Icon(Icons.checklist, size: 13, color: Colors.white),
+                    const SizedBox(width: 4),
                     Text(
-                      countdownLabel(event.dateTime),
-                      style: TextStyle(
-                        fontSize: 11,
+                      '$taskCount tugas',
+                      style: const TextStyle(
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: _countdownColor(colorScheme),
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
               ),
+            ),
+          Positioned(
+            left: 12,
+            bottom: 12,
+            child: _buildDatePill(
+                colorScheme, dayName, dayNum, monthName, timeStr),
+          ),
+        ],
+      ),
+    );
+  }
 
-              const SizedBox(height: 12),
-              const Divider(height: 1),
-              const SizedBox(height: 10),
-
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                  Row(
-                    children: [
-                      Icon(Icons.people_alt_outlined, size: 16, color: colorScheme.primary),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${event.joinedCount} Ikut',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      if (event.maybeCount > 0) ...[
-                        Text(
-                          ' • ${event.maybeCount} Ragu',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-
-
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildRsvpOption(
-                        label: 'Ikut',
-                        icon: Icons.check,
-                        isSelected: myRsvp == 'joined',
-                        selectedColor: Colors.green.shade700,
-                        selectedBg: Colors.green.shade50,
-                        colorScheme: colorScheme,
-                        onTap: () => onRSVP?.call('joined'),
-                      ),
-                      const SizedBox(width: 6),
-                      _buildRsvpOption(
-                        label: 'Ragu',
-                        icon: Icons.help_outline,
-                        isSelected: myRsvp == 'maybe',
-                        selectedColor: Colors.orange.shade800,
-                        selectedBg: Colors.orange.shade50,
-                        colorScheme: colorScheme,
-                        onTap: () => onRSVP?.call('maybe'),
-                      ),
-                      const SizedBox(width: 6),
-                      _buildRsvpOption(
-                        label: 'Gak',
-                        icon: Icons.close,
-                        isSelected: myRsvp == 'declined',
-                        selectedColor: Colors.red.shade700,
-                        selectedBg: Colors.red.shade50,
-                        colorScheme: colorScheme,
-                        onTap: () => onRSVP?.call('declined'),
-                      ),
-                    ],
-                  ),
-                ],
+  Widget _buildDatePill(
+    ColorScheme colorScheme,
+    String dayName,
+    String dayNum,
+    String monthName,
+    String timeStr,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.14),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            dayNum,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: colorScheme.primary,
+              height: 1,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                dayName,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              Text(
+                monthName,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.primary,
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(width: 10),
+          Container(
+            width: 1,
+            height: 26,
+            color: colorScheme.outlineVariant,
+          ),
+          const SizedBox(width: 10),
+          Icon(Icons.schedule, size: 15, color: colorScheme.primary),
+          const SizedBox(width: 4),
+          Text(
+            timeStr,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: colorScheme.primary,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildBannerCountdown(ColorScheme colorScheme) {
+    final color = _countdownColor(colorScheme);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_countdownIcon(), size: 14, color: color),
+          const SizedBox(width: 5),
+          Text(
+            countdownLabel(event.dateTime),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bannerCircle(double size, double alpha) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: alpha),
+      ),
+    );
+  }
+
+  IconData _bannerIcon() {
+    final t = event.title.toLowerCase();
+    if (t.contains('gowes') ||
+        t.contains('sepeda') ||
+        t.contains('touring') ||
+        t.contains('ride')) {
+      return Icons.directions_bike;
+    }
+    if (t.contains('workshop') ||
+        t.contains('servis') ||
+        t.contains('belajar') ||
+        t.contains('pelatihan')) {
+      return Icons.build_circle_outlined;
+    }
+    if (t.contains('kopdar') ||
+        t.contains('ngopi') ||
+        t.contains('makan') ||
+        t.contains('buka puasa')) {
+      return Icons.local_cafe_outlined;
+    }
+    if (t.contains('foto') ||
+        t.contains('photo') ||
+        t.contains('hunting') ||
+        t.contains('shooting')) {
+      return Icons.photo_camera_outlined;
+    }
+    if (t.contains('lari') || t.contains('marathon') || t.contains('run')) {
+      return Icons.directions_run;
+    }
+    return Icons.event_available;
+  }
+
+  Widget _buildReminderButton(ColorScheme colorScheme) {
+    return IconButton(
+      icon: Icon(
+        event.reminderSet
+            ? Icons.notifications_active
+            : Icons.notifications_none_outlined,
+        color: event.reminderSet
+            ? Colors.amber.shade700
+            : colorScheme.onSurfaceVariant,
+        size: 22,
+      ),
+      tooltip:
+          event.reminderSet ? 'Pengingat H-1 aktif' : 'Nyalakan pengingat H-1',
+      visualDensity: VisualDensity.compact,
+      onPressed: onToggleReminder,
     );
   }
 
@@ -337,7 +445,9 @@ class EventCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected ? selectedBg : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          color: isSelected
+              ? selectedBg
+              : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           border: Border.all(
             color: isSelected ? selectedColor : colorScheme.outlineVariant,
           ),
@@ -357,7 +467,8 @@ class EventCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? selectedColor : colorScheme.onSurfaceVariant,
+                color:
+                    isSelected ? selectedColor : colorScheme.onSurfaceVariant,
               ),
             ),
           ],
