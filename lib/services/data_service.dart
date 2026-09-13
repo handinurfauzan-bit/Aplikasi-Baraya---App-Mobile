@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
 class DataService extends ChangeNotifier {
-  static const String _storageKey = 'kumpul_in_data_v1';
+  static const String _storageKey = 'kumpul_in_data_v2';
 
   final String currentUserId = 'user_001';
 
@@ -134,6 +134,8 @@ class DataService extends ChangeNotifier {
       description:
           'Wadah silaturahmi goweser Jakarta dan sekitarnya. Gowes santai, sehat, dan guyub!',
       category: 'Gowes & Olahraga',
+      adminId: 'user_002',
+      logo: 'assets/logo1.1.png',
       members: usersList,
     );
 
@@ -339,6 +341,8 @@ class DataService extends ChangeNotifier {
       description:
           'Belajar fotografi bareng: dari teori komposisi sampai hunting sunrise. Open untuk semua level kamera!',
       category: 'Fotografi & Kreatif',
+      adminId: 'user_102',
+      logo: 'assets/logo1.1.png',
       members: members,
     );
 
@@ -459,6 +463,8 @@ class DataService extends ChangeNotifier {
       description:
           'Komunitas pecinta gunung. Rutin naik tiap bulan, selalu safety first dan zero waste.',
       category: 'Mendaki & Outdoor',
+      adminId: 'user_202',
+      logo: 'assets/logo1.1.png',
       members: members,
     );
 
@@ -571,15 +577,100 @@ class DataService extends ChangeNotifier {
       name: community.name,
       description: community.description,
       category: community.category,
+      adminId: community.adminId,
+      logo: community.logo,
       members: [...community.members, user],
     );
     notifyListeners();
     _persist();
   }
 
+  void joinCommunity(String communityId) {
+    addUserToCommunity(communityId, currentUser);
+  }
+
   Event? getEventById(String eventId) => _events[eventId];
 
   Community? getCommunity(String id) => _communities[id];
+
+  ({int saldo, int totalIn, int totalOut, int monthlyIuran, List<
+      ({String title, String date, int nominal, bool isIncome})> entries})
+      getTreasuryInfo(String communityId) {
+    final community = getCommunity(communityId);
+    final members = community?.members.length ?? 1;
+    final seed = (communityId.hashCode % 1000).abs();
+
+    final monthlyIuran = 25000 + (members * 10000) + (seed % 25000);
+    final months = 2 + (seed % 3);
+    final totalIn = (members * monthlyIuran * months) + ((seed % 7) * 50000);
+    final totalOut = totalIn * (50 + (seed % 25)) ~/ 100;
+    final saldo = totalIn - totalOut;
+
+    final now = DateTime.now();
+    final prevMonth = DateTime(now.year, now.month - 1, 5);
+    final curMonth = DateTime(now.year, now.month, 2);
+
+    String fmt(DateTime d) => '${d.day} ${_monthName(d.month)} ${d.year}';
+
+    final entries = <({String title, String date, int nominal, bool isIncome})>[
+      (
+        title: 'Iuran Bulanan Anggota',
+        date: fmt(curMonth),
+        nominal: members * monthlyIuran,
+        isIncome: true,
+      ),
+      (
+        title: 'Sewa Transportasi',
+        date: fmt(DateTime(now.year, now.month, 5)),
+        nominal: totalOut ~/ 2,
+        isIncome: false,
+      ),
+      (
+        title: 'Perlengkapan Event',
+        date: fmt(DateTime(now.year, now.month, 8)),
+        nominal: (totalOut ~/ 2) + (seed % 50000),
+        isIncome: false,
+      ),
+      (
+        title: 'Donasi Kegiatan',
+        date: fmt(DateTime(now.year, now.month, 12)),
+        nominal: totalIn ~/ 3,
+        isIncome: true,
+      ),
+      (
+        title: 'Iuran Bulanan Anggota',
+        date: fmt(prevMonth),
+        nominal: members * monthlyIuran,
+        isIncome: true,
+      ),
+    ];
+
+    return (
+      saldo: saldo,
+      totalIn: totalIn,
+      totalOut: totalOut,
+      monthlyIuran: monthlyIuran,
+      entries: entries,
+    );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+    return months[month - 1];
+  }
 
   List<Event> getEventsForCommunity(String communityId) {
     final list =
@@ -620,7 +711,9 @@ class DataService extends ChangeNotifier {
     final communityEventIds =
         getEventsForCommunity(communityId).map((e) => e.id).toSet();
     final list = _tasks.values
-        .where((t) => communityEventIds.contains(t.eventId))
+        .where((t) =>
+            t.communityId == communityId ||
+            communityEventIds.contains(t.eventId))
         .toList();
     list.sort((a, b) {
       if (a.isCompleted != b.isCompleted) {
@@ -636,7 +729,8 @@ class DataService extends ChangeNotifier {
         getEventsForCommunity(communityId).map((e) => e.id).toSet();
     final list = _tasks.values
         .where((t) =>
-            communityEventIds.contains(t.eventId) &&
+            (t.communityId == communityId ||
+                communityEventIds.contains(t.eventId)) &&
             t.assigneeIds.contains(userId))
         .toList();
     list.sort((a, b) {
@@ -720,6 +814,7 @@ class DataService extends ChangeNotifier {
   void deleteTask(String taskId) {
     _tasks.remove(taskId);
     notifyListeners();
+    _persist();
   }
 
   void addAnnouncement(Announcement announcement) {
@@ -751,6 +846,8 @@ class DataService extends ChangeNotifier {
           name: c.name,
           description: c.description,
           category: c.category,
+          adminId: c.adminId,
+          logo: c.logo,
           members: c.members.map((m) => m.id == user.id ? user : m).toList(),
         );
       }

@@ -26,7 +26,7 @@ class MembersScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Anggota Komunitas', style: TextStyle(fontSize: 18)),
+            const Text('Anggota Komunitas'),
             Text(
               community?.name ?? 'Komunitas',
               style: TextStyle(

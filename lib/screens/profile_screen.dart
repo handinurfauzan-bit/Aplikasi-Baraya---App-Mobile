@@ -241,14 +241,6 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...myCommunities.map((c) {
-            final events = dataService.getEventsForCommunity(c.id);
-            final joined = events.where((e) => e.rsvps[user.id] == 'joined').length;
-            final myTasksHere = myTasks
-                .where((t) {
-                  final e = dataService.getEventById(t.eventId);
-                  return e != null && e.communityId == c.id;
-                })
-                .length;
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(14),
@@ -261,14 +253,22 @@ class ProfileScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: colorScheme.primaryContainer,
-                    child: Text(
-                      c.name.isNotEmpty ? c.name[0].toUpperCase() : '?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
+                    child: c.logo.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Image.asset(
+                              c.logo,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : Text(
+                            c.name.isNotEmpty ? c.name[0].toUpperCase() : '?',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -284,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${c.members.length} anggota • Ikut $joined event • $myTasksHere tugas',
+                          '${c.members.length} anggota',
                           style: TextStyle(
                             fontSize: 11,
                             color: colorScheme.onSurfaceVariant,

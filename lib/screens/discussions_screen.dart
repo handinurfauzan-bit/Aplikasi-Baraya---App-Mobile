@@ -4,17 +4,17 @@ import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../services/app_settings.dart';
 import '../services/data_service.dart';
-import 'add_community_screen.dart';
 import 'community_detail_screen.dart';
 
-class CommunitiesScreen extends StatelessWidget {
-  const CommunitiesScreen({super.key});
+class DiscussionsScreen extends StatelessWidget {
+  const DiscussionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final dataService = context.watch<DataService>();
     final settings = context.watch<AppSettings>();
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final communities = dataService.getAllCommunities();
 
     return Scaffold(
@@ -25,9 +25,9 @@ class CommunitiesScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Komunitas'),
+            const Text('Diskusi'),
             Text(
-              '${communities.length} komunitas tersedia',
+              'Pilih komunitas untuk membuka diskusi',
               style: TextStyle(
                 fontSize: 12,
                 color: colorScheme.onPrimary.withValues(alpha: 0.85),
@@ -45,61 +45,40 @@ class CommunitiesScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final c = communities[index];
                 final isActive = c.id == settings.communityId;
-                return _CommunityCard(
+                final events = dataService.getEventsForCommunity(c.id);
+                return _DiscussionCommunityCard(
                   community: c,
                   isActive: isActive,
-                  isMember: c.members
-                      .any((m) => m.id == dataService.currentUserId),
-                  onJoin: () {
-                    dataService.joinCommunity(c.id);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Kamu bergabung ke ${c.name}!',
-                        ),
-                        backgroundColor: Colors.green.shade700,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
+                  memberCount: c.members.length,
+                  eventCount: events.length,
                   onTap: () {
                     settings.selectCommunity(c.id);
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => CommunityDetailScreen(communityId: c.id),
+                        builder: (_) =>
+                            CommunityDiscussionScreen(communityId: c.id),
                       ),
                     );
                   },
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const AddCommunityScreen()),
-          );
-        },
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        icon: const Icon(Icons.add),
-        label: const Text('Tambah Komunitas'),
-      ),
     );
   }
 }
 
-class _CommunityCard extends StatelessWidget {
+class _DiscussionCommunityCard extends StatelessWidget {
   final Community community;
   final bool isActive;
-  final bool isMember;
-  final VoidCallback onJoin;
+  final int memberCount;
+  final int eventCount;
   final VoidCallback onTap;
 
-  const _CommunityCard({
+  const _DiscussionCommunityCard({
     required this.community,
     required this.isActive,
-    required this.isMember,
-    required this.onJoin,
+    required this.memberCount,
+    required this.eventCount,
     required this.onTap,
   });
 
@@ -188,46 +167,32 @@ class _CommunityCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${community.members.length} anggota',
+                      '$memberCount anggota • ${community.category}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$eventCount event • Buka diskusi komunitas',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 4),
-              if (!isMember)
-                FilledButton(
-                  onPressed: onJoin,
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                  ),
-                  child: const Text(
-                    'Bergabung',
-                    style: TextStyle(fontSize: 11),
-                  ),
-                )
-              else
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.people_alt_outlined,
-                        size: 18, color: colorScheme.primary),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Anggota',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: Icon(Icons.forum, size: 20, color: colorScheme.primary),
+              ),
             ],
           ),
         ),

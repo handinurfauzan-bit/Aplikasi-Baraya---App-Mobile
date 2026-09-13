@@ -44,6 +44,8 @@ class Community {
   final String name;
   final String description;
   final String category;
+  final String adminId;
+  final String logo;
   final List<User> members;
 
   const Community({
@@ -51,6 +53,8 @@ class Community {
     required this.name,
     required this.description,
     this.category = 'Hobi & Komunitas',
+    this.adminId = '',
+    this.logo = '',
     this.members = const [],
   });
 
@@ -59,6 +63,8 @@ class Community {
         name: json['name'] as String,
         description: json['description'] as String,
         category: json['category'] as String? ?? 'Hobi & Komunitas',
+        adminId: json['adminId'] as String? ?? '',
+        logo: json['logo'] as String? ?? '',
         members: (json['members'] as List<dynamic>? ?? [])
             .map((e) => User.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -69,6 +75,8 @@ class Community {
         'name': name,
         'description': description,
         'category': category,
+        'adminId': adminId,
+        'logo': logo,
         'members': members.map((e) => e.toJson()).toList(),
       };
 }
@@ -226,6 +234,7 @@ class Announcement {
 class Task {
   final String id;
   final String eventId;
+  final String communityId;
   final String title;
   final String description;
   final List<String> assigneeIds;
@@ -236,6 +245,7 @@ class Task {
     required this.id,
     required this.eventId,
     required this.title,
+    this.communityId = '',
     this.description = '',
     this.assigneeIds = const [],
     this.isCompleted = false,
@@ -246,6 +256,7 @@ class Task {
         id: json['id'] as String,
         eventId: json['eventId'] as String,
         title: json['title'] as String,
+        communityId: json['communityId'] as String? ?? '',
         description: json['description'] as String? ?? '',
         assigneeIds: (json['assigneeIds'] as List<dynamic>? ?? []).cast<String>(),
         isCompleted: json['isCompleted'] as bool? ?? false,
@@ -256,6 +267,7 @@ class Task {
   Task copyWith({
     String? id,
     String? eventId,
+    String? communityId,
     String? title,
     String? description,
     List<String>? assigneeIds,
@@ -265,6 +277,7 @@ class Task {
     return Task(
       id: id ?? this.id,
       eventId: eventId ?? this.eventId,
+      communityId: communityId ?? this.communityId,
       title: title ?? this.title,
       description: description ?? this.description,
       assigneeIds: assigneeIds ?? this.assigneeIds,
@@ -276,6 +289,7 @@ class Task {
   Map<String, dynamic> toJson() => {
         'id': id,
         'eventId': eventId,
+        'communityId': communityId,
         'title': title,
         'description': description,
         'assigneeIds': assigneeIds,

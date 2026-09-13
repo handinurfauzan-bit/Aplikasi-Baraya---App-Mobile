@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../widgets/brand_logos.dart';
-import '../widgets/gradient_background.dart';
 import '../widgets/social_button.dart';
 import 'home_screen.dart';
 
@@ -96,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: appAuthGradient),
+        color: Colors.white,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),

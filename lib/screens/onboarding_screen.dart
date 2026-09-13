@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/gradient_background.dart';
 import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -10,12 +9,12 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingPage {
-  final IconData icon;
+  final String logoAsset;
   final String title;
   final String description;
 
   const _OnboardingPage({
-    required this.icon,
+    required this.logoAsset,
     required this.title,
     required this.description,
   });
@@ -27,21 +26,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   static const List<_OnboardingPage> _pages = [
     _OnboardingPage(
-      icon: Icons.event_available_rounded,
+      logoAsset: 'assets/op1.png',
       title: 'Kelola & Ikuti Event',
       description:
           'Buat event komunitas, konfirmasi kehadiran, dan ketahui siapa saja '
           'yang ikut semua dalam satu tempat.',
     ),
     _OnboardingPage(
-      icon: Icons.campaign_rounded,
+      logoAsset: 'assets/op2.png',
       title: 'Info & Pengumuman',
       description:
           'Tetap terupdate dengan pengumuman penting dan informasi terbaru '
           'untuk seluruh anggota komunitasmu.',
     ),
     _OnboardingPage(
-      icon: Icons.checklist_rounded,
+      logoAsset: 'assets/op3.png',
       title: 'Bagi Tugas Bersama',
       description:
           'Bagi-bagi tugas, pantau progresnya, dan wujudkan setiap acara '
@@ -83,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: appAuthGradient),
+        color: Colors.white,
         child: SafeArea(
           child: Column(
             children: [
@@ -121,45 +120,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
+                              Image.asset(
+                                page.logoAsset,
+                                fit: BoxFit.contain,
                                 width: 210,
                                 height: 210,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: const Color(0xFFEAF7EF),
-                                  border: Border.all(
-                                    color: const Color(0xFF16A34A)
-                                        .withValues(alpha: 0.20),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Icon(
-                                      page.icon,
-                                      size: 96,
-                                      color: const Color(0xFF16A34A),
-                                    ),
-                                    Positioned(
-                                      right: 34,
-                                      top: 38,
-                                      child: Container(
-                                        width: 30,
-                                        height: 30,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Color(0xFF15803D),
-                                        ),
-                                        child: const Icon(
-                                          Icons.check_rounded,
-                                          size: 18,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                               const SizedBox(height: 36),
                               Text(
