@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../services/app_settings.dart';
 import '../services/data_service.dart';
+import '../widgets/about_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -18,7 +19,14 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text('Pengaturan'),
+        title: Text(
+          'Pengaturan',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -142,14 +150,7 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('Baraya'),
                   subtitle: const Text('v1.0.0'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Baraya v1.0.0'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  },
+                  onTap: () => showAboutAppDialog(context),
                 ),
               ],
             ),

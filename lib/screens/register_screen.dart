@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/aura_logo.dart';
 import '../widgets/brand_logos.dart';
 import '../widgets/social_button.dart';
 import 'home_screen.dart';
@@ -123,13 +124,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Image.asset(
-                    'assets/logo1.1.png',
-                    fit: BoxFit.contain,
-                  ),
+                const AuraLogo(
+                  asset: 'assets/logo1.1.png',
+                  size: 95,
+                  auraSize: 160,
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -153,7 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _field(
                   controller: _nameController,
                   label: 'Nama Lengkap',
-                  hint: 'misal: Dimas Aditya',
+                  hint: 'misal: Handi Nurfauzan',
                   icon: Icons.person_outline,
                 ),
                 const SizedBox(height: 12),

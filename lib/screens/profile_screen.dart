@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/models.dart';
 import '../services/data_service.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -31,101 +32,162 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title: const Text('Profil Saya'),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'Profil',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
         children: [
-
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.8)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: colorScheme.surfaceContainerLow.withValues(alpha: 0.7),
+              border: Border.all(color: colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               children: [
                 CircleAvatar(
                   radius: 38,
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  backgroundColor: colorScheme.primaryContainer,
                   child: Text(
                     user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                     style: TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimary,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Text(
                   user.name,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     user.role,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(
+                      color: colorScheme.onPrimaryContainer,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                ),
+                const SizedBox(height: 18),
+                Container(
+                  height: 1,
+                  color: colorScheme.outlineVariant,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
                 ),
                 const SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _ProfileStat(label: 'Komunitas', value: '${myCommunities.length}'),
-                    _ProfileStat(label: 'Tugas Saya', value: '${myTasks.length}'),
-                    _ProfileStat(label: 'Event Ikut', value: '$joinedCountAll'),
+                    _ProfileStat(
+                      label: 'Komunitas',
+                      value: '${myCommunities.length}',
+                      light: true,
+                    ),
+                    _ProfileStat(
+                      label: 'Tugas Saya',
+                      value: '${myTasks.length}',
+                      light: true,
+                    ),
+                    _ProfileStat(
+                      label: 'Event Ikut',
+                      value: '$joinedCountAll',
+                      light: true,
+                    ),
                   ],
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () =>
+                        _showEditProfileSheet(context, dataService),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('Edit Profil'),
+                  ),
                 ),
               ],
             ),
           ),
 
           const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.center,
-            child: TextButton.icon(
-              onPressed: () => _showEditProfileSheet(context, dataService),
-              icon: const Icon(Icons.edit_outlined, size: 18),
-              label: const Text('Edit Profil'),
+          const _SectionHeader(
+            icon: Icons.badge_outlined,
+            title: 'Informasi Akun',
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow.withValues(alpha: 0.7),
+              border: Border.all(color: colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              children: [
+                _AccountInfoTile(
+                  icon: Icons.person_outline,
+                  label: 'Nama Lengkap',
+                  value: user.name,
+                ),
+                _AccountInfoTile(
+                  icon: Icons.badge_outlined,
+                  label: 'Username',
+                  value: user.username,
+                ),
+                _AccountInfoTile(
+                  icon: Icons.mail_outline,
+                  label: 'Email',
+                  value: user.email,
+                ),
+                _AccountInfoTile(
+                  icon: Icons.phone_outlined,
+                  label: 'Nomor HP',
+                  value: user.phone,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
 
-
-          Row(
-            children: [
-              Icon(Icons.checklist, size: 18, color: colorScheme.primary),
-              const SizedBox(width: 6),
-              const Text(
-                'Tugas Saya',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          const SizedBox(height: 20),
+          const _SectionHeader(icon: Icons.checklist, title: 'Tugas Saya'),
           const SizedBox(height: 8),
           if (myTasks.isEmpty)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
+                color: colorScheme.surfaceContainerLow.withValues(alpha: 0.7),
+                border: Border.all(color: colorScheme.outlineVariant),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
                 children: [
@@ -143,17 +205,28 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
+                color: colorScheme.surfaceContainerLow.withValues(alpha: 0.7),
+                border: Border.all(color: colorScheme.outlineVariant),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      const Text(
+                        'Progres Panitia',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
                       Text(
-                        'Progres panitia: $completedTasks/${myTasks.length} selesai',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                        '$completedTasks dari ${myTasks.length} selesai',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -190,12 +263,9 @@ class ProfileScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   task.title,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    decoration: task.isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
                                   ),
                                 ),
                                 if (event != null)
@@ -227,18 +297,7 @@ class ProfileScreen extends StatelessWidget {
             ),
 
           const SizedBox(height: 20),
-
-
-          Row(
-            children: [
-              Icon(Icons.groups, size: 18, color: colorScheme.primary),
-              const SizedBox(width: 6),
-              const Text(
-                'Komunitas Saya',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          const _SectionHeader(icon: Icons.groups, title: 'Komunitas Saya'),
           const SizedBox(height: 8),
           ...myCommunities.map((c) {
             return Container(
@@ -252,7 +311,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: colorScheme.primaryContainer,
+                    backgroundColor: colorScheme.primary,
                     child: c.logo.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(5),
@@ -266,7 +325,7 @@ class ProfileScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: colorScheme.onPrimaryContainer,
+                              color: colorScheme.onPrimary,
                             ),
                           ),
                   ),
@@ -298,15 +357,65 @@ class ProfileScreen extends StatelessWidget {
             );
           }),
 
-          const SizedBox(height: 80),
+          const SizedBox(height: 24),
+          Material(
+            color: colorScheme.surfaceContainerLow.withValues(alpha: 0.7),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: colorScheme.error.withValues(alpha: 0.4)),
+            ),
+            child: ListTile(
+              leading: Icon(Icons.logout, color: colorScheme.error),
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              trailing: Icon(Icons.chevron_right, color: colorScheme.error),
+              onTap: () => _confirmLogout(context),
+            ),
+          ),
+
+          const SizedBox(height: 32),
         ],
       ),
     );
   }
 
+  void _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Logout?'),
+        content: const Text('Anda yakin ingin keluar dari aplikasi?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+    }
+  }
+
   void _showEditProfileSheet(BuildContext context, DataService dataService) {
     final user = dataService.currentUser;
     final nameController = TextEditingController(text: user.name);
+    final usernameController = TextEditingController(text: user.username);
+    final emailController = TextEditingController(text: user.email);
+    final phoneController = TextEditingController(text: user.phone);
     final roleController = TextEditingController(text: user.role);
 
     showModalBottomSheet(
@@ -337,7 +446,37 @@ class ProfileScreen extends StatelessWidget {
                   controller: nameController,
                   decoration: const InputDecoration(
                     labelText: 'Nama Lengkap',
+                    hintText: 'misal: Handi Nurfauzan',
                     prefixIcon: Icon(Icons.person_outline),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'misal: handinurfauzan',
+                    prefixIcon: Icon(Icons.badge_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'nama@email.com',
+                    prefixIcon: Icon(Icons.mail_outline),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Nomor HP',
+                    hintText: '08xxxxxxxxxx',
+                    prefixIcon: Icon(Icons.phone_outlined),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -345,8 +484,8 @@ class ProfileScreen extends StatelessWidget {
                   controller: roleController,
                   decoration: const InputDecoration(
                     labelText: 'Peran / Role',
-                    hintText: 'misal: Ketua Panitia',
-                    prefixIcon: Icon(Icons.badge_outlined),
+                    hintText: 'misal: Anggota Aktif',
+                    prefixIcon: Icon(Icons.groups_outlined),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -362,6 +501,9 @@ class ProfileScreen extends StatelessWidget {
                       if (nameController.text.trim().isEmpty) return;
                       dataService.updateUser(user.copyWith(
                         name: nameController.text.trim(),
+                        username: usernameController.text.trim(),
+                        email: emailController.text.trim(),
+                        phone: phoneController.text.trim(),
                         role: roleController.text.trim().isEmpty
                             ? 'Anggota'
                             : roleController.text.trim(),
@@ -386,19 +528,74 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfileStat extends StatelessWidget {
-  final String label;
-  final String value;
-  const _ProfileStat({required this.label, required this.value});
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _SectionHeader({required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: colorScheme.primary),
+        const SizedBox(width: 6),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _AccountInfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _AccountInfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      leading: Icon(icon, size: 20, color: colorScheme.primary),
+      title: Text(
+        label,
+        style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant),
+      ),
+      subtitle: Text(
+        value.isEmpty ? '-' : value,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class _ProfileStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool light;
+  const _ProfileStat(
+      {required this.label, required this.value, this.light = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: light ? colorScheme.onSurface : Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -406,7 +603,11 @@ class _ProfileStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
+          style: TextStyle(
+            color:
+                light ? colorScheme.onSurfaceVariant : Colors.white70,
+            fontSize: 12,
+          ),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/aura_logo.dart';
 import '../widgets/brand_logos.dart';
 import '../widgets/social_button.dart';
 import 'home_screen.dart';
@@ -87,18 +88,15 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Column(
+                const Column(
                   children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Image.asset(
-                        'assets/logo1.1.png',
-                        fit: BoxFit.contain,
-                      ),
+                    AuraLogo(
+                      asset: 'assets/logo1.1.png',
+                      size: 110,
+                      auraSize: 180,
                     ),
-                    const SizedBox(height: 18),
-                    const Text(
+                    SizedBox(height: 18),
+                    Text(
                       'Login',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -109,8 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
+                    SizedBox(height: 6),
+                    Text(
                       'Masuk untuk kelola komunitismu',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: Color(0xFF6B7C72)),

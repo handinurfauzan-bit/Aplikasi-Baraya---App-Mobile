@@ -43,7 +43,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         appBar: AppBar(
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
-          title: const Text('Detail Event'),
+          title: Text(
+            'Detail Event',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onPrimary,
+            ),
+          ),
         ),
         body: Center(
           child: Column(
@@ -70,7 +77,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text('Detail Event'),
+        title: Text(
+          'Detail Event',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),

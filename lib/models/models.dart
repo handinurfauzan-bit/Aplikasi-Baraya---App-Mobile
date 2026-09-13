@@ -3,32 +3,47 @@ class User {
   final String name;
   final String avatarUrl;
   final String role;
+  final String username;
+  final String email;
+  final String phone;
 
   const User({
     required this.id,
     required this.name,
     this.avatarUrl = '',
     this.role = 'Anggota',
+    this.username = '',
+    this.email = '',
+    this.phone = '',
   });
 
   User copyWith({
     String? name,
     String? avatarUrl,
     String? role,
+    String? username,
+    String? email,
+    String? phone,
   }) {
     return User(
       id: id,
       name: name ?? this.name,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       role: role ?? this.role,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
     );
   }
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json['id'] as String,
-        name: json['name'] as String,
+        id: json['id'] as String? ?? '',
+        name: json['name'] as String? ?? '',
         avatarUrl: json['avatarUrl'] as String? ?? '',
         role: json['role'] as String? ?? 'Anggota',
+        username: json['username'] as String? ?? '',
+        email: json['email'] as String? ?? '',
+        phone: json['phone'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +51,9 @@ class User {
         'name': name,
         'avatarUrl': avatarUrl,
         'role': role,
+        'username': username,
+        'email': email,
+        'phone': phone,
       };
 }
 
@@ -59,15 +77,17 @@ class Community {
   });
 
   factory Community.fromJson(Map<String, dynamic> json) => Community(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        description: json['description'] as String,
+        id: json['id'] as String? ?? '',
+        name: json['name'] as String? ?? '',
+        description: json['description'] as String? ?? '',
         category: json['category'] as String? ?? 'Hobi & Komunitas',
         adminId: json['adminId'] as String? ?? '',
         logo: json['logo'] as String? ?? '',
-        members: (json['members'] as List<dynamic>? ?? [])
-            .map((e) => User.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        members: [
+          for (final e in (json['members'] as List<dynamic>? ?? []))
+            if (e is Map)
+              User.fromJson(Map<String, dynamic>.from(e))
+        ],
       );
 
   Map<String, dynamic> toJson() => {
@@ -91,6 +111,7 @@ class Event {
   final String creatorId;
   final Map<String, String> rsvps;
   final bool reminderSet;
+  final String imagePath;
 
   Event({
     required this.id,
@@ -102,19 +123,25 @@ class Event {
     required this.creatorId,
     Map<String, String>? rsvps,
     this.reminderSet = false,
+    this.imagePath = '',
   }) : rsvps = rsvps != null ? Map.from(rsvps) : {};
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
-        id: json['id'] as String,
-        communityId: json['communityId'] as String,
-        title: json['title'] as String,
+        id: json['id'] as String? ?? '',
+        communityId: json['communityId'] as String? ?? '',
+        title: json['title'] as String? ?? '',
         description: json['description'] as String? ?? '',
-        dateTime: DateTime.fromMillisecondsSinceEpoch(json['dateTime'] as int),
+        dateTime: DateTime.fromMillisecondsSinceEpoch(
+          json['dateTime'] is int
+              ? json['dateTime'] as int
+              : DateTime.now().millisecondsSinceEpoch,
+        ),
         location: json['location'] as String? ?? '',
-        creatorId: json['creatorId'] as String,
+        creatorId: json['creatorId'] as String? ?? '',
         rsvps: (json['rsvps'] as Map<String, dynamic>?)
-            ?.map((k, v) => MapEntry(k, v as String)),
+            ?.map((k, v) => MapEntry(k, v?.toString() ?? '')),
         reminderSet: json['reminderSet'] as bool? ?? false,
+        imagePath: json['imagePath'] as String? ?? '',
       );
 
   int get joinedCount => rsvps.values.where((v) => v == 'joined').length;
@@ -131,6 +158,7 @@ class Event {
     String? creatorId,
     Map<String, String>? rsvps,
     bool? reminderSet,
+    String? imagePath,
   }) {
     return Event(
       id: id ?? this.id,
@@ -142,6 +170,7 @@ class Event {
       creatorId: creatorId ?? this.creatorId,
       rsvps: rsvps ?? this.rsvps,
       reminderSet: reminderSet ?? this.reminderSet,
+      imagePath: imagePath ?? this.imagePath,
     );
   }
 
@@ -155,6 +184,7 @@ class Event {
         'creatorId': creatorId,
         'rsvps': rsvps,
         'reminderSet': reminderSet,
+        'imagePath': imagePath,
       };
 }
 
@@ -182,14 +212,17 @@ class Announcement {
   });
 
   factory Announcement.fromJson(Map<String, dynamic> json) => Announcement(
-        id: json['id'] as String,
-        communityId: json['communityId'] as String,
-        title: json['title'] as String,
-        body: json['body'] as String,
-        authorId: json['authorId'] as String,
-        authorName: json['authorName'] as String,
-        createdAt:
-            DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int),
+        id: json['id'] as String? ?? '',
+        communityId: json['communityId'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        body: json['body'] as String? ?? '',
+        authorId: json['authorId'] as String? ?? '',
+        authorName: json['authorName'] as String? ?? '',
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          json['createdAt'] is int
+              ? json['createdAt'] as int
+              : DateTime.now().millisecondsSinceEpoch,
+        ),
         pinned: json['pinned'] as bool? ?? false,
         category: json['category'] as String? ?? 'Umum',
       );
@@ -253,15 +286,21 @@ class Task {
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory Task.fromJson(Map<String, dynamic> json) => Task(
-        id: json['id'] as String,
-        eventId: json['eventId'] as String,
-        title: json['title'] as String,
+        id: json['id'] as String? ?? '',
+        eventId: json['eventId'] as String? ?? '',
+        title: json['title'] as String? ?? '',
         communityId: json['communityId'] as String? ?? '',
         description: json['description'] as String? ?? '',
-        assigneeIds: (json['assigneeIds'] as List<dynamic>? ?? []).cast<String>(),
+        assigneeIds: [
+          for (final e in (json['assigneeIds'] as List<dynamic>? ?? []))
+            if (e != null) e.toString()
+        ],
         isCompleted: json['isCompleted'] as bool? ?? false,
-        createdAt:
-            DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int),
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          json['createdAt'] is int
+              ? json['createdAt'] as int
+              : DateTime.now().millisecondsSinceEpoch,
+        ),
       );
 
   Task copyWith({

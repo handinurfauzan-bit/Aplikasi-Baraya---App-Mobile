@@ -10,11 +10,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
   late Animation<double> _drop;
   late Animation<double> _titleIn;
-  late Animation<double> _settle;
+  late Animation<double> _glow;
 
   static const _splashBackground = LinearGradient(
     begin: Alignment.topCenter,
@@ -27,6 +27,8 @@ class _SplashScreenState extends State<SplashScreen>
     stops: [0.0, 0.4, 1.0],
   );
 
+  static const _brandGreen = Color(0xFF16A34A);
+
   @override
   void initState() {
     super.initState();
@@ -36,25 +38,19 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _drop = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOutCubic),
-      ),
+    _drop = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.45, curve: Curves.easeOutBack),
     );
 
-    _titleIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.5, 0.72, curve: Curves.easeOutCubic),
-      ),
+    _titleIn = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.5, 0.72, curve: Curves.easeOutCubic),
     );
 
-    _settle = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.72, 1.0, curve: Curves.easeOut),
-      ),
+    _glow = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.75, 1.0, curve: Curves.easeOut),
     );
 
     _controller.forward();
@@ -95,64 +91,80 @@ class _SplashScreenState extends State<SplashScreen>
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
-            final drop = _drop.value;
-            final title = _titleIn.value;
-            final settle = _settle.value;
+            final drop = _drop.value.clamp(0.0, 1.0);
+            final title = _titleIn.value.clamp(0.0, 1.0);
+            final glow = _glow.value.clamp(0.0, 1.0);
 
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Transform.scale(
-                    scale: 0.95 + 0.05 * drop + 0.03 * settle,
-                    child: Transform.translate(
-                      offset: Offset(0, (1 - drop) * -380),
-                      child: FadeTransition(
-                        opacity: _drop,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Transform.scale(
-                              scale: 1 + 0.15 * settle,
-                              child: Container(
-                                width: 190,
-                                height: 190,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: const Color(0xFF16A34A)
-                                      .withValues(alpha: 0.08 * settle),
+                  // Lockup: logo mark + "Baraya" wordmark (no gap between).
+                  Transform.translate(
+                    offset: Offset(0, (1 - _drop.value) * -340),
+                    child: Opacity(
+                      opacity: drop,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 220,
+                            height: 205,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Soft radial glow behind the logo.
+                                Transform.scale(
+                                  scale: 0.8 + 0.25 * glow,
+                                  child: Container(
+                                    width: 220,
+                                    height: 205,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: RadialGradient(
+                                        colors: [
+                                          _brandGreen
+                                              .withValues(alpha: 0.18 * glow),
+                                          _brandGreen.withValues(alpha: 0.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 140,
+                                  height: 140,
+                                  child: Image.asset(
+                                    'assets/logo1.1.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // "Baraya" wordmark sits right under the logomark.
+                          Transform.translate(
+                            offset: Offset(0, (1 - title) * 24),
+                            child: Opacity(
+                              opacity: title,
+                              child: Transform.scale(
+                                scale: 0.92 + 0.08 * title,
+                                child: SizedBox(
+                                  width: 210,
+                                  height: 78,
+                                  child: Image.asset(
+                                    'assets/Baraya.1.png',
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: 140,
-                              height: 140,
-                              child: Image.asset(
-                                'assets/logo1.1.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Transform.translate(
-                    offset: Offset(0, (1 - title) * 26),
-                    child: Opacity(
-                      opacity: title.clamp(0.0, 1.0),
-                      child: SizedBox(
-                        width: 210,
-                        height: 78,
-                        child: Image.asset(
-                          'assets/Baraya.1.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 28),
                   Opacity(
                     opacity: title.clamp(0.0, 1.0),
                     child: const SizedBox(
@@ -160,7 +172,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: Color(0xFF16A34A),
+                        color: _brandGreen,
                       ),
                     ),
                   ),

@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
 class DataService extends ChangeNotifier {
-  static const String _storageKey = 'kumpul_in_data_v2';
+  static const String _storageKey = 'kumpul_in_data_v8';
+  static const int _seedVersion = 3;
 
   final String currentUserId = 'user_001';
 
@@ -28,6 +29,15 @@ class DataService extends ChangeNotifier {
 
     try {
       final prefs = await SharedPreferences.getInstance();
+      for (final old in const [
+        'kumpul_in_data_v3',
+        'kumpul_in_data_v4',
+        'kumpul_in_data_v5',
+        'kumpul_in_data_v6',
+        'kumpul_in_data_v7'
+      ]) {
+        await prefs.remove(old);
+      }
       final raw = prefs.getString(_storageKey);
       if (raw == null) {
         await _persist();
@@ -35,6 +45,11 @@ class DataService extends ChangeNotifier {
       }
 
       final data = jsonDecode(raw) as Map<String, dynamic>;
+
+      if ((data['seedVersion'] as int? ?? -1) != _seedVersion) {
+        await _persist();
+        return;
+      }
 
       _users.clear();
       for (final e in (data['users'] as List<dynamic>? ?? [])) {
@@ -77,6 +92,7 @@ class DataService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final payload = jsonEncode({
+        'seedVersion': _seedVersion,
         'users': _users.values.map((e) => e.toJson()).toList(),
         'communities': _communities.values.map((e) => e.toJson()).toList(),
         'events': _events.values.map((e) => e.toJson()).toList(),
@@ -93,9 +109,12 @@ class DataService extends ChangeNotifier {
     final usersList = [
       const User(
         id: 'user_001',
-        name: 'Dimas Aditya',
+        name: 'Handi Nurfauzan',
         avatarUrl: '',
         role: 'Anggota Aktif',
+        username: 'handinurfauzan',
+        email: 'handi.nurfauzan@gmail.com',
+        phone: '081234567890',
       ),
       const User(
         id: 'user_002',
@@ -130,10 +149,10 @@ class DataService extends ChangeNotifier {
     const commId = 'kumpul_001';
     _communities[commId] = Community(
       id: commId,
-      name: 'Komunitas Gowes Batavia',
+      name: 'Komunitas Gotong Royong Pangawaren',
       description:
-          'Wadah silaturahmi goweser Jakarta dan sekitarnya. Gowes santai, sehat, dan guyub!',
-      category: 'Gowes & Olahraga',
+          'Wadah gotong royong warga Pangawaren dan sekitarnya. Bersih lingkungan, guyub, dan maju bersama!',
+      category: 'Gotong Royong & Sosial',
       adminId: 'user_002',
       logo: 'assets/logo1.1.png',
       members: usersList,
@@ -143,11 +162,11 @@ class DataService extends ChangeNotifier {
     final event1 = Event(
       id: 'event_001',
       communityId: commId,
-      title: 'Gowes Minggu Pagi ke Monas',
+      title: 'Gotong Royong Pangawaren',
       description:
-          'Gowes santai CFD Senayan - Monas - Bundaran HI. Pace 15-20 km/jam, cocok buat semua level. Jangan lupa bawa helm dan botol minum!',
+          'Kegiatan gotong royong membersihkan lingkungan bersama warga Pangawaren. Bawa alat kebersihan, masker, dan sarung tangan. Titik kumpul di Kantor Desa Pangawaren.',
       dateTime: DateTime(now.year, now.month, now.day + 2, 6, 30),
-      location: 'Titik Kumpul: GBK Senayan Gate 1',
+      location: 'Titik Kumpul: Kantor Desa Pangawaren',
       creatorId: 'user_002',
       rsvps: {
         'user_001': 'joined',
@@ -157,6 +176,8 @@ class DataService extends ChangeNotifier {
         'user_005': 'maybe',
       },
       reminderSet: true,
+      imagePath:
+          'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&h=400&fit=crop',
     );
 
     final event2 = Event(
@@ -174,6 +195,8 @@ class DataService extends ChangeNotifier {
         'user_004': 'joined',
       },
       reminderSet: false,
+      imagePath:
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop',
     );
 
     final event3 = Event(
@@ -190,6 +213,8 @@ class DataService extends ChangeNotifier {
         'user_003': 'declined',
       },
       reminderSet: false,
+      imagePath:
+          'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=600&h=400&fit=crop',
     );
 
     _events[event1.id] = event1;
@@ -200,35 +225,35 @@ class DataService extends ChangeNotifier {
       Task(
         id: 'task_001',
         eventId: 'event_001',
-        title: 'Bawa Toolkit & Pompa Portable',
+        title: 'Bawa Alat Kebersihan & Peralatan',
         description:
-            'Bawa pompa lantai portabel & kunci L di titik kumpul GBK.',
+            'Bawa sapu lidi, pengki, dan gerobak sampah ke titik kumpul Kantor Desa.',
         assigneeIds: ['user_004'],
         isCompleted: true,
       ),
       Task(
         id: 'task_002',
         eventId: 'event_001',
-        title: 'Siapkan Pisang & Air Mineral',
+        title: 'Siapkan Air Mineral & Snack',
         description:
-            'Beli 2 kardus air mineral 330ml dan 2 sisir pisang cavendish.',
+            'Beli air mineral dan snack untuk relawan gotong royong.',
         assigneeIds: ['user_005', 'user_001'],
         isCompleted: false,
       ),
       Task(
         id: 'task_003',
         eventId: 'event_001',
-        title: 'Briefing Rute & Safety Marshall',
-        description: 'Sepakati sinyal tangan dan titik putar balik CFD.',
+        title: 'Koordinasi Area Kerja dengan Perangkat Desa',
+        description: 'Sepakati pembagian area bersih-bersih dengan perangkat desa setempat.',
         assigneeIds: ['user_004', 'user_002'],
         isCompleted: false,
       ),
       Task(
         id: 'task_004',
         eventId: 'event_001',
-        title: 'Dokumentasi Foto & Video Reels',
+        title: 'Dokumentasi Foto & Video',
         description:
-            'Ambil konten di Bundaran HI & Monas untuk feed Instagram komunitas.',
+            'Ambil dokumentasi gotong royong Pangawaren untuk arsip komunitas.',
         assigneeIds: ['user_001'],
         isCompleted: false,
       ),
@@ -362,6 +387,8 @@ class DataService extends ChangeNotifier {
         'user_104': 'maybe',
       },
       reminderSet: true,
+      imagePath:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop',
     );
     final e2 = Event(
       id: 'event_102',
@@ -377,6 +404,8 @@ class DataService extends ChangeNotifier {
         'user_103': 'joined',
       },
       reminderSet: false,
+      imagePath:
+          'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop',
     );
     _events[e1.id] = e1;
     _events[e2.id] = e2;
@@ -484,6 +513,8 @@ class DataService extends ChangeNotifier {
         'user_204': 'joined',
       },
       reminderSet: true,
+      imagePath:
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
     );
     final e2 = Event(
       id: 'event_202',
@@ -499,6 +530,8 @@ class DataService extends ChangeNotifier {
         'user_202': 'joined',
       },
       reminderSet: false,
+      imagePath:
+          'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=400&fit=crop',
     );
     _events[e1.id] = e1;
     _events[e2.id] = e2;
@@ -549,7 +582,7 @@ class DataService extends ChangeNotifier {
 
   User get currentUser =>
       _users[currentUserId] ??
-      const User(id: 'user_001', name: 'Dimas Aditya', role: 'Anggota Aktif');
+      const User(id: 'user_001', name: 'Handi Nurfauzan', role: 'Anggota Aktif');
 
   User? getUser(String id) => _users[id];
 

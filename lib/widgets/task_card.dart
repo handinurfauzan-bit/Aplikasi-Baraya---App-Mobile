@@ -97,7 +97,6 @@ class TaskCard extends StatelessWidget {
                       task.title,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
-                        decoration: isDone ? TextDecoration.lineThrough : null,
                         color: isDone
                             ? colorScheme.onSurfaceVariant.withValues(alpha: 0.6)
                             : colorScheme.onSurface,
@@ -109,7 +108,6 @@ class TaskCard extends StatelessWidget {
                         task.description,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                          decoration: isDone ? TextDecoration.lineThrough : null,
                         ),
                       ),
                     ],

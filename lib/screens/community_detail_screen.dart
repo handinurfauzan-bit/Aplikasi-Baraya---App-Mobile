@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../services/data_service.dart';
 import '../widgets/task_card.dart';
+import 'location_detail_screen.dart';
 import 'members_screen.dart';
 
 class CommunityDetailScreen extends StatelessWidget {
@@ -43,7 +44,7 @@ class CommunityDetailScreen extends StatelessWidget {
         page: MembersScreen(communityId: communityId),
       ),
       (
-        label: 'Tugas dari Admin',
+        label: 'Tugas',
         subtitle: '${tasks.length} tugas panitia untuk dikerjakan',
         icon: Icons.checklist,
         page: CommunityTasksScreen(communityId: communityId),
@@ -80,6 +81,11 @@ class CommunityDetailScreen extends StatelessWidget {
               community.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
             ),
             Text(
               'Detail Komunitas • $membersCount anggota',
@@ -378,7 +384,14 @@ class CommunityTasksScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tugas dari Admin'),
+            Text(
+              'Tugas',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               community?.name ?? 'Komunitas',
               style: TextStyle(
@@ -406,15 +419,29 @@ class CommunityTasksScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Progress Tugas Panitia',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Progress Tugas Panitia',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${(progress * 100).round()}%',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '$done dari $tasks.length selesai',
+                    done == tasks.length
+                        ? 'Semua tugas ($tasks.length) sudah selesai. Kerja bagus!'
+                        : '$done dari ${tasks.length} tugas selesai',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -668,11 +695,13 @@ class CommunityDiscussionScreen extends StatefulWidget {
 
 class _CommunityDiscussionScreenState extends State<CommunityDiscussionScreen> {
   final TextEditingController _inputController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   List<_Thread> _threads = const [];
 
   @override
   void dispose() {
     _inputController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -717,22 +746,31 @@ class _CommunityDiscussionScreenState extends State<CommunityDiscussionScreen> {
     return threads;
   }
 
-  void _postMessage() {
-    final text = _inputController.text.trim();
+  void _postMessage([String? preset]) {
+    final text = (preset ?? _inputController.text).trim();
     if (text.isEmpty) return;
     setState(() {
       _threads = [
+        ..._threads,
         _Thread(
-          author: 'Dimas Aditya',
+          author: 'Handi Nurfauzan',
           role: 'Anggota Aktif',
           time: 'Baru saja',
           text: text,
           replies: const [],
         ),
-        ..._threads,
       ];
       _inputController.clear();
     });
+    if (_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
   }
 
   @override
@@ -754,7 +792,14 @@ class _CommunityDiscussionScreenState extends State<CommunityDiscussionScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Diskusi'),
+            Text(
+              'Diskusi',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               community?.name ?? 'Komunitas',
               style: TextStyle(
@@ -769,11 +814,14 @@ class _CommunityDiscussionScreenState extends State<CommunityDiscussionScreen> {
         children: [
           Expanded(
             child: ListView.separated(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
               itemCount: _threads.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) =>
-                  _DiscussionCard(thread: _threads[index]),
+              itemBuilder: (context, index) => _DiscussionCard(
+                thread: _threads[index],
+                onReplyTap: (reply) => _postMessage(reply),
+              ),
             ),
           ),
           SafeArea(
@@ -824,8 +872,9 @@ class _CommunityDiscussionScreenState extends State<CommunityDiscussionScreen> {
 
 class _DiscussionCard extends StatelessWidget {
   final _Thread thread;
+  final ValueChanged<String>? onReplyTap;
 
-  const _DiscussionCard({required this.thread});
+  const _DiscussionCard({required this.thread, this.onReplyTap});
 
   @override
   Widget build(BuildContext context) {
@@ -893,23 +942,27 @@ class _DiscussionCard extends StatelessWidget {
               const SizedBox(height: 10),
               const Divider(height: 1),
               const SizedBox(height: 8),
-              ...thread.replies.map((r) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.reply,
-                            size: 14, color: colorScheme.outline),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            r,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+              ...thread.replies.map((r) => InkWell(
+                    onTap: () => onReplyTap?.call(r),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.reply,
+                              size: 14, color: colorScheme.outline),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              r,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   )),
             ],
@@ -971,7 +1024,14 @@ class CommunityTreasuryScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Kas Komunitas'),
+            Text(
+              'Kas Komunitas',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               community?.name ?? 'Komunitas',
               style: TextStyle(
@@ -1243,7 +1303,14 @@ class CommunityLocationsScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Lokasi Event'),
+            Text(
+              'Lokasi Event',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               community?.name ?? 'Komunitas',
               style: TextStyle(
@@ -1262,66 +1329,79 @@ class CommunityLocationsScreen extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final e = events[index];
-                return Card(
-                  margin: EdgeInsets.zero,
-                  elevation: 0,
-                  color: colorScheme.surface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    side: BorderSide(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                return Padding(
+                  padding: EdgeInsets.zero,
+                  child: Container(
+                    margin: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color:
+                            colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(Icons.location_on,
-                              color: colorScheme.primary, size: 24),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => LocationDetailScreen(
+                                communityName:
+                                    community?.name ?? 'Komunitas',
+                                event: e,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
                             children: [
-                              Text(
-                                e.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(Icons.location_on,
+                                    color: colorScheme.primary, size: 24),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      e.title,
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      e.location,
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                e.location,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: colorScheme.primary,
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          tooltip: 'Buka Navigasi',
-                          icon: Icon(Icons.navigation_outlined,
-                              color: colorScheme.primary),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Navigasi menuju ${e.location} akan segera hadir.'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 );

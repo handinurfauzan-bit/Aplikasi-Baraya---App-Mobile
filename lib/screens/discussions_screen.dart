@@ -25,7 +25,14 @@ class DiscussionsScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Diskusi'),
+            Text(
+            'Diskusi',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onPrimary,
+            ),
+          ),
             Text(
               'Pilih komunitas untuk membuka diskusi',
               style: TextStyle(

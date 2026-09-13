@@ -76,7 +76,14 @@ class _AddCommunityScreenState extends State<AddCommunityScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tambah Komunitas'),
+            Text(
+              'Tambah Komunitas',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               'Daftarkan komunitas barumu',
               style: TextStyle(

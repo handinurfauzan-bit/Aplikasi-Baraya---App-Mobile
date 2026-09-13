@@ -25,7 +25,14 @@ class CommunitiesScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Komunitas'),
+            Text(
+              'Komunitas',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
             Text(
               '${communities.length} komunitas tersedia',
               style: TextStyle(
@@ -128,7 +135,7 @@ class _CommunityCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: colorScheme.primaryContainer,
+                backgroundColor: colorScheme.primary,
                 child: community.logo.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.all(6),
@@ -144,7 +151,7 @@ class _CommunityCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimaryContainer,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
               ),

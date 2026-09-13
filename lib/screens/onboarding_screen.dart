@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/aura_logo.dart';
 import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -120,13 +121,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                page.logoAsset,
-                                fit: BoxFit.contain,
-                                width: 210,
-                                height: 210,
+                              AuraLogo(
+                                asset: page.logoAsset,
+                                size: 200,
+                                auraSize: 280,
                               ),
-                              const SizedBox(height: 36),
+                              const SizedBox(height: 28),
                               Text(
                                 page.title,
                                 textAlign: TextAlign.center,

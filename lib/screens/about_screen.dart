@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../services/app_settings.dart';
 import '../services/data_service.dart';
+import '../widgets/about_dialog.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -18,7 +19,14 @@ class AboutScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text('Pengaturan & Tentang'),
+        title: Text(
+          'Pengaturan & Tentang',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -170,11 +178,19 @@ class AboutScreen extends StatelessWidget {
             margin: EdgeInsets.zero,
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.info_outline, color: Colors.green),
+                  title: const Text('Tentang Aplikasi'),
+                  subtitle: const Text('Info aplikasi dan pengembang'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => showAboutAppDialog(context),
+                ),
+                const Divider(height: 1),
                 const ListTile(
                   leading: Icon(Icons.code, color: Colors.green),
-                  title: Text('Developer'),
-                  subtitle: Text('Tim Pengembang Baraya'),
-                  trailing: Icon(Icons.chevron_right),
+                  title: Text('Handi Nurfauzan'),
+                  subtitle: Text('handinurfauzan@gmail.com'),
+                  trailing: Icon(Icons.developer_mode_outlined),
                 ),
                 const Divider(height: 1),
                 const ListTile(
