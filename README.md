@@ -1,45 +1,75 @@
-# Baraya 
+# Baraya (kumpul_in)
 > **"Satu tempat buat semua urusan komunitasmu"**
 
-Aplikasi koordinasi komunitas hobi yang dirancang untuk mengatasi masalah informasi penting yang sering tertimbun obrolan chat grup (WhatsApp/Telegram).
+Aplikasi koordinasi komunitas hobi berbasis Flutter yang dirancang untuk mengatasi masalah informasi penting yang sering tertimbun obrolan chat grup (WhatsApp/Telegram).
 
 ---
 
-##  Masalah yang Diselesaikan
+## Masalah yang Diselesaikan
 Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun begitu anggota bertambah banyak, obrolan basa-basi membuat informasi krusial sering terlewat:
 - Jadwal event & konfirmasi siapa yang ikut/tidak ikut tenggelam.
 - Pengumuman penting dari pengurus tidak terbaca.
 - Pembagian tugas kepanitiaan dadakan menjadi kacau dan tidak terlacak.
 
-**Baraya** menyelesaikan masalah ini dengan 3 fitur inti yang saling terhubung secara koheren:
+**Baraya** menyelesaikan masalah ini melalui satu aplikasi yang memisahkan informasi penting dari obrolan kasual.
 
 ---
 
-## 3 Fitur Inti
+## Fitur Utama
 
-### 1. Event & Jadwal
-- **Jadwal & Detail Event**: Informasi tanggal, jam, rute, dan titik kumpul yang jelas.
-- **Sistem RSVP Real-time**: Anggota dapat memilih status kehadiran (*Ikut*, *Ragu*, *Gak Ikut*) dengan penghitungan kuorum otomatis.
-- **Pengingat H-1 (Reminder)**: Notifikasi terjadwal 24 jam sebelum acara dimulai agar anggota tidak lupa.
-- **Buat Event Baru**: Form pembuatan event komunitas dengan DatePicker dan TimePicker.
+### Onboarding & Akses
+- **Splash screen**: logo Baraya dengan aura hijau lembut sebelum masuk.
+- **Onboarding 3 langkah**: penjelasan singkat alur aplikasi dengan dot indicator.
+- **Login / Register**: form dengan sosial media (Google, Apple, Facebook) dan validasi.
 
-### 2. Pengumuman Terpisah dari Obrolan
-- **Feed Khusus Info Penting**: Terpisah total dari obrolan kasual sehingga tidak ada info yang tertimbun.
-- **Fitur Pin / Sematkan**: Pengumuman penting (seperti rute darurat atau info iuran kas) dapat di-pin di bagian atas.
-- **Kategori Pengumuman**: Filter cepat berdasarkan tag (*Penting*, *Keuangan*, *Aturan*, *Umum*).
-- **Detail Pengumuman**: Modal sheet lengkap dengan identitas pengurus yang menerbitkan.
+### Beranda (Dashboard)
+- **Sapaan dinamis** sesuai nama pengguna yang sedang login.
+- **Hero cards event** unggulan dengan gambar dan CTA.
+- **Grid fitur pintas**: Komunitas, Event, Diskusi, dan Kas.
 
-### 3. Pembagian Tugas Simpel (Checklist Panitia Dadakan)
-- **Checklist Terintegrasi ke Event**: Setiap tugas secara langsung tertaut dengan event tertentu (misal: "Gowes Minggu Pagi" butuh konsumsi & pompa).
-- **Penugasan Anggota (Assignment)**: Tugas dapat ditugaskan ke satu atau beberapa anggota komunitas.
-- **Progress Bar Real-time**: Melacak persentase penyelesaian tugas panitia (*Contoh: 3 dari 6 selesai - 50%*).
-- **Checklist Interaktif**: Klik untuk menyelesaikan tugas dengan animasi visual coret (strike-through).
+### Komunitas
+- **Daftar & buat komunitas**: kartu komunitas dengan logo, status keanggotaan, dan tombol gabung.
+- **Detail komunitas**: menu Lihat Anggota, Tugas, Diskusi, Kas Komunitas, dan Lokasi Event.
+- **Diskusi komunitas**: thread dan balasan yang bisa dibalas langsung dari kartu.
+
+### Event & Jadwal
+- **Jadwal & Detail Event**: tanggal, jam, lokasi, dan deskripsi yang jelas.
+- **Sistem RSVP**: anggota memilih status (*Ikut*, *Ragu*, *Tidak / Gak Ikut*) dengan penghitungan otomatis.
+- **Pengingat H-1**: notifikasi terjadwal 24 jam sebelum acara.
+- **Buat Event Baru**: form dengan DatePicker & TimePicker, plus filter pencarian (cari, status RSVP, waktu).
+
+### Tugas Panitia
+- **Progress bar real-time**: persentase + jumlah "X dari Y tugas selesai".
+- **Checklist terintegrasi ke event**: tugas ditautkan ke event tertentu dengan penugasan anggota.
+- **Tambah / hapus tugas**: dialog dengan pilih penanggung jawab.
+
+### Pengumuman
+- **Feed khusus info penting**: terpisah dari obrolan kasual.
+- **Pin / sematkan** pengumuman penting ke bagian atas.
+- **Kategori filter**: Penting, Keuangan, Aturan, Umum.
+
+### Kas Komunitas
+- **Ringkasan iuran**: pemasukan vs pengeluaran dengan format Rupiah.
+- **Tambah transaksi**: catat pemasukan & pengeluaran komunitas.
+
+### Lokasi Event
+- **Peta ilustrasi**: tampilan lokasi event dengan pin dan rute.
+- **Detail lokasi**: penjelasan lengkap, tanggal, dan jam kegiatan.
+
+### Notifikasi & Pengaturan
+- **Halaman Notifikasi**: daftar pengumuman dengan sematkan (pin).
+- **Pengaturan**: mode gelap/terang, dan dialog **Tentang Aplikasi** (info versi & pengembang).
+
+### Profil
+- **Kartu profil**: avatar, role, statistik (Komunitas, Tugas, Event Ikut).
+- **Tugas Saya**: progres panitia + daftar tugas yang dipegang.
+- **Edit profil** dan **Logout** dengan dialog konfirmasi.
 
 ---
 
 ## Tech Stack & Arsitektur
-- **Framework**: [Flutter](https://flutter.dev) (v3.44+, Material 3)
-- **State Management**: [`Provider`](https://pub.dev/packages/provider) (`ChangeNotifier` reactive architecture)
+- **Framework**: [Flutter](https://flutter.dev) (Material 3)
+- **State Management**: [`provider`](https://pub.dev/packages/provider) (`ChangeNotifier` reactive architecture)
 - **Notifikasi Lokal**: [`flutter_local_notifications`](https://pub.dev/packages/flutter_local_notifications) & [`timezone`](https://pub.dev/packages/timezone)
 - **Formatting**: [`intl`](https://pub.dev/packages/intl)
 - **Persistensi**: [`shared_preferences`](https://pub.dev/packages/shared_preferences)
@@ -49,18 +79,37 @@ Komunitas hobi biasanya berkoordinasi melalui grup chat (WA/Telegram). Namun beg
 ## Struktur Proyek
 ```text
 lib/
-├── main.dart                      # Entry point, Theme configuration, & Provider setup
+├── main.dart                      # Entry point, Theme config, & Provider setup
 ├── models/
-│   └── models.dart                # User, Community, Event, Announcement, Task models
+│   └── models.dart                # User, Community, Event, Announcement, Task, dsb.
 ├── services/
-│   ├── data_service.dart          # Central reactive state & mock community data
-│   └── notification_service.dart  # Cross-platform local notification handler
+│   ├── data_service.dart          # State reaktif pusat & data seed komunitas
+│   ├── app_settings.dart          # Tema gelap/terang & komunitas aktif
+│   └── notification_service.dart  # Penjadwalan notifikasi lokal lintas platform
 ├── widgets/
-│   ├── event_card.dart            # Date badge, RSVP actions, task counter & reminder toggle
-│   ├── announcement_feed.dart     # Category filter chips, pinned cards & toggle pin
-│   └── task_card.dart             # Checkbox toggle, assignee tags, strike-through
+│   ├── aura_logo.dart             # Logo Baraya dengan aura hijau
+│   ├── event_card.dart            # Badge tanggal, aksi RSVP & toggle reminder
+│   ├── compact_event_card.dart    # Kartu event versi ringkas
+│   ├── announcement_feed.dart     # Filter kategori, kartu pin, toggle semat
+│   ├── task_card.dart             # Checklist tugas, tag penanggung jawab
+│   ├── about_dialog.dart          # Dialog "Tentang Aplikasi" (shared)
+│   └── ...                        # Gradient background, tombol sosial, dsb.
 └── screens/
-    └── home_screen.dart           # Tabbed dashboard (Event, Pengumuman, Tugas) & dialogs
+    ├── splash_screen.dart         # Splash logo Baraya
+    ├── onboarding_screen.dart     # Perkenalan 3 langkah
+    ├── login_screen.dart          # Login dengan sosial media
+    ├── register_screen.dart       # Pendaftaran akun
+    ├── home_screen.dart           # Dashboard + bottom nav (Beranda, Komunitas, Event, Kas, Profil)
+    ├── communities_screen.dart    # Daftar & tambah komunitas
+    ├── community_detail_screen.dart # Menu detail komunitas (Anggota, Tugas, Diskusi, Kas, Lokasi)
+    ├── members_screen.dart        # Daftar anggota & statistik
+    ├── discussions_screen.dart    # Diskusi antar komunitas
+    ├── event_detail_screen.dart   # Detail event, RSVP, & tugas panitia
+    ├── location_detail_screen.dart# Peta & penjelasan lokasi event
+    ├── notification_screen.dart   # Notifikasi pin
+    ├── settings_screen.dart       # Mode gelap & tentang aplikasi
+    ├── profile_screen.dart        # Profil, tugas saya, edit, logout
+    └── ...                        # About, Add Community, Treasury, dsb.
 ```
 
 ---
