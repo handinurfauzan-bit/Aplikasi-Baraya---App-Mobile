@@ -64,7 +64,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _snack('Konfirmasi kata sandi tidak sama');
       return;
     }
-    _goToHome();
+    _submitSuccess();
+  }
+
+  void _submitSuccess() {
+    final messenger = ScaffoldMessenger.of(context);
+    final name = _nameController.text.trim();
+    Navigator.of(context).pop();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('Pendaftaran berhasil. Silakan masuk, $name!'),
+        backgroundColor: const Color(0xFF16A34A),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   void _snack(String message) {
